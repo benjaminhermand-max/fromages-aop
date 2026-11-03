@@ -375,6 +375,27 @@ button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
 .gempty{margin-top:24px;text-align:center;color:var(--muted)}
 .gempty b{display:block;font-family:var(--f-display);font-style:italic;font-size:1.3rem;color:var(--ink)}
 
+/* ======== RÉCOMPENSE ======== */
+.o-wrap .crown{display:none}
+.is-boss .o-wrap .crown,.crown.on{display:inline}
+.is-boss .o-wrap .crown.drop{animation:crownDrop .9s cubic-bezier(.3,1.5,.5,1) both}
+@keyframes crownDrop{from{transform:translateY(-60px) rotate(-14deg);opacity:0}60%{opacity:1}to{transform:rotate(-14deg);opacity:1}}
+.o-wrap .crown,.boss .crown{transform-box:view-box;transform-origin:50px 6px}
+.bosstag{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;padding:3px 12px;border-radius:999px;background:#F6E3B0;border:1.5px solid #D49A26;color:var(--accent-ink);font-weight:700;font-size:.88rem}
+.bosstag::before{content:"♛";color:#D49A26;font-size:1.05rem;line-height:1}
+.boss{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:24px max(16px, env(safe-area-inset-right, 0px)) 24px max(16px, env(safe-area-inset-left, 0px));background:rgba(43,36,32,.55);overflow:hidden}
+.boss-in{position:relative;width:100%;max-width:420px;text-align:center;padding:24px 22px 26px;box-shadow:0 24px 60px -20px rgba(43,36,32,.6)}
+.boss-ic{width:140px;height:auto;display:block;margin:-4px auto 6px;overflow:visible}
+.boss h2{margin:2px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:2.4rem;line-height:1.05;color:var(--accent)}
+.boss-msg{margin:8px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.45rem;line-height:1.2}
+.boss-sub{margin:10px 0 0;color:var(--muted)}
+.boss .cta{margin-top:18px}
+.boss-in.pop{animation:bossPop .55s cubic-bezier(.3,1.4,.5,1) both}
+@keyframes bossPop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.rain{position:absolute;top:-20px;width:10px;height:9px;background:var(--cheese);border:1px solid var(--cheese-deep);border-radius:45% 60% 40% 55%;pointer-events:none}
+.tro.crowned{grid-column:1/-1;flex-direction:row;justify-content:center;gap:14px;background:#FBF0D2;border-color:#D49A26;text-align:left}
+.tro.crowned .t{font-size:1.25rem}
+
 @media (prefers-reduced-motion: reduce){.mouse img,.mouse::after{animation:none!important}.tile,.fc{transition:none}.track{transition:none}}
 </style>
 </head>
@@ -431,9 +452,18 @@ button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
           <circle cx="40" cy="68" r="3.2" fill="var(--cheese-deep)" opacity=".75"/>
           <circle cx="50" cy="52" r="44" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
         </g>
+        <g class="crown" transform="rotate(-14 50 6)">
+            <path d="M27 12 L22 -16 L38 -2 L50 -26 L62 -2 L78 -16 L73 12 Z" fill="#E7B53C" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M27 12 L73 12 L72 4 L28 4 Z" fill="#D49A26" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="22" cy="-16" r="3.6" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.6"/>
+            <circle cx="50" cy="-26" r="4.2" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.6"/>
+            <circle cx="78" cy="-16" r="3.6" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.6"/>
+            <circle cx="50" cy="8" r="2.6" fill="var(--bleu)"/><circle cx="37" cy="8" r="2" fill="var(--sauge)"/><circle cx="63" cy="8" r="2" fill="var(--sauge)"/>
+          </g>
       </svg></span>mages</h1>
     <div class="lane" id="lane"></div>
     <p class="sub">Les 47 AOP de France</p>
+    <p class="bosstag" id="bossTag" hidden>Boss des fromages AOP</p>
     <p class="intro">Du lait au plateau&nbsp;: la fabrication, les fromages AOP de chaque région, les grands fromages étrangers, et des quiz pour réviser.</p>
 
     <ul class="menu" id="menu">
@@ -628,9 +658,35 @@ button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
 <button class="totop" id="totop" type="button" aria-label="Remonter en haut" data-off><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="data/aop.js?v=8"></script>
-<script src="data/etrangers.js?v=8"></script>
-<script src="app.js?v=8"></script>
+<!-- ============ RÉCOMPENSE : TOUS LES TROPHÉES ============ -->
+<div class="boss" id="boss" hidden role="dialog" aria-modal="true" aria-labelledby="bossT">
+  <div class="boss-in card">
+    <svg class="boss-ic" viewBox="-6 -34 112 140" aria-hidden="true">
+      <circle cx="50" cy="52" r="44" fill="var(--rind)" filter="url(#wc)"/>
+      <circle cx="50" cy="52" r="37" fill="var(--cheese)"/>
+      <circle cx="36" cy="40" r="6" fill="var(--cheese-deep)" opacity=".75"/><circle cx="63" cy="62" r="7.5" fill="var(--cheese-deep)" opacity=".75"/>
+      <circle cx="62" cy="34" r="3.6" fill="var(--cheese-deep)" opacity=".75"/><circle cx="40" cy="68" r="3.2" fill="var(--cheese-deep)" opacity=".75"/>
+      <circle cx="50" cy="52" r="44" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
+      <g class="crown on" transform="rotate(-14 50 6)">
+            <path d="M27 12 L22 -16 L38 -2 L50 -26 L62 -2 L78 -16 L73 12 Z" fill="#E7B53C" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
+            <path d="M27 12 L73 12 L72 4 L28 4 Z" fill="#D49A26" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+            <circle cx="22" cy="-16" r="3.6" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.6"/>
+            <circle cx="50" cy="-26" r="4.2" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.6"/>
+            <circle cx="78" cy="-16" r="3.6" fill="var(--accent)" stroke="var(--ink)" stroke-width="1.6"/>
+            <circle cx="50" cy="8" r="2.6" fill="var(--bleu)"/><circle cx="37" cy="8" r="2" fill="var(--sauge)"/><circle cx="63" cy="8" r="2" fill="var(--sauge)"/>
+          </g>
+    </svg>
+    <p class="kicker">Les 10 trophées sont à toi</p>
+    <h2 id="bossT">Félicitations&nbsp;!</h2>
+    <p class="boss-msg">Tu es le boss des fromages AOP.</p>
+    <p class="boss-sub">Sans-faute à tous les quiz, au contrôle blanc, et toute l’appli explorée. Ta couronne t’attend sur la page d’accueil.</p>
+    <button class="cta" type="button" id="bossOk">Merci&nbsp;!</button>
+  </div>
+</div>
+
+<script src="data/aop.js?v=9"></script>
+<script src="data/etrangers.js?v=9"></script>
+<script src="app.js?v=9"></script>
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); }); }
 </script>

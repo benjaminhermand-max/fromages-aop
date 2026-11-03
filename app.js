@@ -76,7 +76,33 @@ function win(id) {
   won.add(id); store.set("trophees", [...won]);
   const t = TROPHIES.find(x => x[0] === id); say("Trophée débloqué · " + t[1]);
   updateTroLink();
+  if (isBoss()) setTimeout(() => showBoss(true), 1400);
 }
+/* ----- récompense finale : tous les trophées ----- */
+const isBoss = () => TROPHIES.every(t => won.has(t[0]));
+function applyBoss(drop) {
+  const b = isBoss();
+  document.documentElement.classList.toggle("is-boss", b);
+  $("bossTag").hidden = !b;
+  const c = document.querySelector(".o-wrap .crown");
+  if (b && drop) { c.classList.remove("drop"); void c.getBoundingClientRect(); c.classList.add("drop"); }
+}
+function showBoss(fromWin) {
+  if (!isBoss() || (fromWin && store.get("boss-vu", false))) return;
+  store.set("boss-vu", true);
+  const box = $("boss"); box.hidden = false;
+  const inn = box.querySelector(".boss-in"); inn.classList.remove("pop"); void inn.offsetWidth; inn.classList.add("pop");
+  $("bossOk").focus({ preventScroll: true });
+  if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    for (let k = 0; k < 46; k++) {
+      const c = document.createElement("span"); c.className = "rain"; c.style.left = (Math.random() * 100) + "%";
+      const s = .6 + Math.random() * .9; box.appendChild(c);
+      c.animate([{ transform: `translateY(0) rotate(0deg) scale(${s})` }, { transform: `translateY(${innerHeight + 60}px) rotate(${360 + Math.random() * 540}deg) scale(${s})` }],
+        { duration: 1800 + Math.random() * 1800, delay: Math.random() * 1400, easing: "cubic-bezier(.3,.1,.7,1)", fill: "forwards" }).finished.then(() => c.remove());
+    }
+  }
+}
+function closeBoss() { $("boss").hidden = true; $("boss").querySelectorAll(".rain").forEach(r => r.remove()); applyBoss(true); }
 function checkSeen() {
   if (seen.steps.size >= 5) win("etapes");
   if (R.filter(r => r.n).every(r => seen.regions.has(r.id))) win("explo");
@@ -538,8 +564,8 @@ function finish() {
 /* ================= TROPHÉES ================= */
 const CUP = (c1, c2) => `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="30" r="22" fill="${c1}" opacity=".35" filter="url(#wc)"/><path d="M22 14h20v10a10 10 0 0 1-20 0z" fill="${c2}" stroke="#2B2420" stroke-width="2" stroke-linejoin="round"/><path d="M22 17h-6a6 6 0 0 0 7 8M42 17h6a6 6 0 0 1-7 8" fill="none" stroke="#2B2420" stroke-width="2" stroke-linecap="round"/><path d="M29 34h6v6h-6zM24 46h16v-6H24z" fill="${c2}" stroke="#2B2420" stroke-width="2" stroke-linejoin="round"/></svg>`;
 function renderTrophies() {
-  $("troLead").innerHTML = `<span class="trocount">${won.size} sur ${TROPHIES.length}</span> trophées débloqués. Ils restent enregistrés sur ce téléphone.`;
-  $("tros").innerHTML = TROPHIES.map(([id, t, d]) => { const ok = won.has(id); return `<div class="card tro ${ok ? "" : "lock"}">${CUP(ok ? "#D9A23A" : "#bbb", ok ? "#F1C75B" : "#ddd")}<span class="t">${esc(t)}</span><span class="d">${esc(d)}</span></div>`; }).join("");
+  $("troLead").innerHTML = isBoss() ? `<span class="trocount">${won.size} sur ${TROPHIES.length}</span> trophées : tu es le boss des fromages AOP&nbsp;!` : `<span class="trocount">${won.size} sur ${TROPHIES.length}</span> trophées débloqués. Obtiens-les tous pour une surprise. Ils restent enregistrés sur ce téléphone.`;
+  $("tros").innerHTML = (isBoss() ? `<button class="card tro crowned" type="button" id="reBoss"><svg viewBox="-6 -34 112 140" aria-hidden="true" style="width:56px;height:70px">${document.querySelector(".boss-ic").innerHTML}</svg><span><span class="t">Boss des fromages AOP</span><br><span class="d">Tous les trophées remportés</span></span></button>` : "") + TROPHIES.map(([id, t, d]) => { const ok = won.has(id); return `<div class="card tro ${ok ? "" : "lock"}">${CUP(ok ? "#D9A23A" : "#bbb", ok ? "#F1C75B" : "#ddd")}<span class="t">${esc(t)}</span><span class="d">${esc(d)}</span></div>`; }).join("");
 }
 
 /* ================= CRÉDITS ================= */
@@ -558,7 +584,13 @@ addEventListener("scroll", () => { if (scrollY > 500) totop.removeAttribute("dat
 totop.onclick = () => scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 
 updateTroLink();
+applyBoss(false);
+$("bossOk").onclick = closeBoss;
+$("boss").addEventListener("click", e => { if (e.target === $("boss")) closeBoss(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("boss").hidden) closeBoss(); });
+document.addEventListener("click", e => { if (e.target.closest("#reBoss")) showBoss(false); });
 route();
+if (isBoss() && !store.get("boss-vu", false)) setTimeout(() => showBoss(true), 800);
 
 /* ================= LA SOURIS DE L'ACCUEIL ================= */
 const stage = $("stage"), oWrap = $("oWrap"), lane = $("lane"), home = $("v-home");
