@@ -379,6 +379,7 @@ function qFab() {
   out.push(Q("Quel animal ne fournit pas de lait pour les fromages AOP français ?", "La bufflonne", ["La vache", "La chèvre", "La brebis"], { expl: "Les fromages AOP français sont faits au lait de vache, de chèvre ou de brebis." }));
   out.push(Q("Combien y a-t-il de fromages AOP en France ?", "47", ["32", "52", "75"], { expl: "47 depuis l’arrivée du Mothais sur feuille en juin 2026." }));
   out.push(Q("Combien de kilos de fromage un Français mange-t-il en moyenne par an ?", "Environ 27 kg", ["Environ 7 kg", "Environ 15 kg", "Environ 45 kg"], { expl: "Environ 27 kg par an et par habitant." }));
+  out.push(Q("Quel rang occupe la France pour la consommation de fromage par habitant ?", "1ᵉʳ rang mondial", ["2ᵉ rang mondial", "5ᵉ rang mondial", "10ᵉ rang mondial"], { expl: "La France est le premier pays consommateur de fromage au monde." }));
   out.push(Q("Quelle région produit le plus de fromages au lait de vache ?", "Normandie", ["Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté", "Bretagne"], { expl: "La Normandie est la 1ʳᵉ région productrice de fromages au lait de vache." }));
   out.push(Q("Comment s’appelle le liquide qui se sépare du caillé ?", "Le sérum", ["La saumure", "La présure", "Le ferment"], { expl: "Le caillé baigne dans un liquide résiduel : le sérum." }));
   out.push(Q("Qu’est-ce que la saumure ?", "De l’eau saturée en sel", ["Du lait caillé", "Un ferment lactique", "Une cave d’affinage"], { expl: "Au salage, on peut plonger les fromages dans un bain de saumure." }));
