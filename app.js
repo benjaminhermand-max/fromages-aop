@@ -33,11 +33,12 @@ const STEPS = [
 const R = AOP.regions;                       // 13 régions, ordre du cours
 const RID = {}; R.forEach((r, i) => { r.ord = i + 1; r.slug = slug(r.nom); RID[r.id] = r; });
 const F = AOP.fromages;                      // 49 fiches (Chaource et Époisses dans 2 régions)
-F.forEach(f => { f.slug = slug(f.nom); f.key = f.region_id + "-" + f.slug; });
+F.forEach(f => { f.slug = slug(f.nom); f.key = f.region_id + "-" + f.slug; f.kind = "aop"; });
 const byName = {}; F.forEach(f => { (byName[f.nom] = byName[f.nom] || []).push(f); });
 const U = Object.values(byName).map(l => Object.assign({}, l[0], { regions: l.map(x => x.region) }));   // 47 AOP uniques
 R.forEach(r => { r.list = F.filter(f => f.region_id === r.id); r.n = r.list.length; });
-const E = window.ETRANGERS; E.forEach(e => { e.slug = slug(e.nom); });
+const E = window.ETRANGERS; E.forEach(e => { e.slug = slug(e.nom); e.kind = "etr"; e.key = "e-" + e.slug;
+  e.pate_code = (Object.entries(PATE).find(([k, p]) => p.nom === e.pate) || ["autre"])[0]; });
 const COUNTRIES = [...new Set(E.map(e => e.pays))];
 const LAITS = [["Vache", U.filter(f => f.lait === "Vache").length, "#C9A27A"], ["Chèvre", U.filter(f => f.lait === "Chèvre").length, "#E8DCC0"], ["Brebis", U.filter(f => f.lait === "Brebis").length, "#F4EFE6"]];
 const fabSrc = (k, w) => `img/fab/fab-${k}-${w}.webp`;
@@ -118,19 +119,24 @@ let lastView = null, curRegion = null;
 function route() {
   const h = location.hash.slice(1);
   let v = "home", fiche = null, parent = null, title = "";
-  if (["fabrication", "regions", "etrangers", "quiz", "trophees", "credits"].includes(h)) v = h;
+  if (["fabrication", "regions", "etrangers", "glossaire", "quiz", "trophees", "credits"].includes(h)) v = h;
   else if (h === "jeu") v = game ? "jeu" : "quiz";
-  else if (h.startsWith("fiche-")) { const f = F.find(x => "fiche-" + x.key === h); if (f) { v = "region"; curRegion = RID[f.region_id]; fiche = { type: "aop", item: f }; } }
-  else if (h.startsWith("etranger-")) { const x = E.find(e => "etranger-" + e.slug === h); if (x) { v = "etrangers"; fiche = { type: "etr", item: x }; } }
+  else if (h.startsWith("fiche-")) { const f = F.find(x => "fiche-" + x.key === h); if (f) { v = "region"; curRegion = RID[f.region_id]; fiche = { ctx: "region", item: f }; } }
+  else if (h.startsWith("etranger-")) { const x = E.find(e => "etranger-" + e.slug === h); if (x) { v = "etrangers"; fiche = { ctx: "etr", item: x }; } }
+  else if (h.startsWith("gl-")) { const x = GALL.find(g => "gl-" + g.key === h); if (x) { v = "glossaire"; fiche = { ctx: "gl", item: x }; } }
   else { const r = R.find(x => x.slug === h && x.n); if (r) { v = "region"; curRegion = r; } }
   if (v === "region") renderRegion(curRegion);
   if (v === "quiz") renderModes();
   if (v === "trophees") renderTrophies();
   if (v === "regions") renderRegionList();
+  if (v === "glossaire" && !fiche) renderGloss();
   const viewId = "v-" + (v === "home" ? "home" : v);
   views.forEach(x => x.hidden = x.id !== viewId);
   const cur = $(viewId), home = v === "home";
   $("bar").hidden = home;
+  $("bar").classList.toggle("top", !cur.dataset.parent);
+  const tab = { home: "home", region: "regions", jeu: "quiz", trophees: "home", credits: "home" }[v] || v;
+  document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.dataset.tab === tab ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
   title = v === "region" ? curRegion.nom : v === "jeu" ? "Quiz · " + MODES.find(x => x[0] === game.mode)[1] : cur.dataset.title;
   $("barT").textContent = title;
   parent = cur.dataset.parent || "accueil";
@@ -216,11 +222,76 @@ $("etrList").innerHTML = COUNTRIES.map(c => {
 }).join("");
 $("etrList").addEventListener("click", e => { const b = e.target.closest("[data-etr]"); b && go("etranger-" + b.dataset.etr); });
 
+/* ================= GLOSSAIRE ================= */
+const fold = t => String(t).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const GALL = U.map(f => Object.assign(f, { kind: "aop" })).concat(E);   // 47 AOP + 8 étrangers
+GALL.forEach(g => { g.hay = fold([g.nom, g.kind === "aop" ? g.regions.join(" ") : g.pays + " " + g.origine, g.lait, g.kind === "aop" ? PATE[g.pate_code].nom + " " + PATE[g.pate_code].ab : g.pate, g.kind === "etr" ? "etranger" : "aop france"].join(" ")); });
+const GF = { q: "", ori: "all", lait: "all", pate: "all", reg: "all", sort: "az" };
+const laitOf = g => ["vache", "chevre", "brebis"].filter(l => fold(g.lait).includes(l));
+function segs(id, key, opts) {
+  $(id).innerHTML = opts.map(([v, t, c]) => `<button type="button" data-v="${v}" aria-pressed="${GF[key] === v}">${c ? `<i style="background:${c}"></i>` : ""}${t}</button>`).join("");
+}
+function drawGlossFilters() {
+  segs("gOri", "ori", [["all", "Tous"], ["aop", "AOP de France"], ["etr", "Étrangers"]]);
+  segs("gLait", "lait", [["all", "Tous"], ["vache", "Vache"], ["chevre", "Chèvre"], ["brebis", "Brebis"]]);
+  segs("gPate", "pate", [["all", "Toutes"]].concat(Object.entries(PATE).map(([k, p]) => [k, p.ab, p.c])).concat(GF.ori === "aop" ? [] : [["autre", "Autres"]]));
+  $("gReg").innerHTML = `<option value="all">Toutes</option>` + R.filter(r => r.n).map(r => `<option value="${r.id}">${esc(r.nom)}</option>`).join("");
+  $("gReg").value = GF.reg; $("gSort").value = GF.sort; $("gq").value = GF.q;
+}
+[["gOri", "ori"], ["gLait", "lait"], ["gPate", "pate"]].forEach(([id, key]) => $(id).addEventListener("click", e => {
+  const b = e.target.closest("[data-v]"); if (!b) return; GF[key] = b.dataset.v;
+  if (key === "ori" && GF.ori === "aop" && GF.pate === "autre") GF.pate = "all";
+  if (key === "ori" && GF.ori === "etr") GF.reg = "all";
+  drawGlossFilters(); drawGloss();
+}));
+$("gReg").addEventListener("change", () => { GF.reg = $("gReg").value; if (GF.reg !== "all" && GF.ori === "etr") GF.ori = "all"; drawGlossFilters(); drawGloss(); });
+$("gSort").addEventListener("change", () => { GF.sort = $("gSort").value; drawGloss(); });
+$("gq").addEventListener("input", () => { GF.q = $("gq").value; drawGloss(); });
+$("gReset").addEventListener("click", () => { Object.assign(GF, { q: "", ori: "all", lait: "all", pate: "all", reg: "all" }); drawGlossFilters(); drawGloss(); $("gq").focus(); });
+function glResults() {
+  const words = fold(GF.q).split(/\s+/).filter(Boolean);
+  let l = GALL.filter(g =>
+    (GF.ori === "all" || g.kind === GF.ori) &&
+    (GF.lait === "all" || laitOf(g).includes(GF.lait)) &&
+    (GF.pate === "all" || g.pate_code === GF.pate) &&
+    (GF.reg === "all" || (g.kind === "aop" && byName[g.nom].some(x => x.region_id === GF.reg))) &&
+    words.every(w => g.hay.includes(w)));
+  const az = (a, b) => a.nom.localeCompare(b.nom, "fr");
+  const grp = g => {
+    if (GF.sort === "az") return [0, fold(g.nom)[0].toUpperCase()];
+    if (GF.sort === "reg") return g.kind === "aop" ? [RID[g.region_id].ord, g.region] : [100 + COUNTRIES.indexOf(g.pays), "Étranger · " + g.pays];
+    if (GF.sort === "pate") { const ks = Object.keys(PATE); const i = ks.indexOf(g.pate_code); return i < 0 ? [99, "Autres pâtes"] : [i, PATE[g.pate_code].nom]; }
+    const ls = laitOf(g);
+    if (ls.length > 1) return [3, "Plusieurs laits"];
+    return [{ vache: 0, chevre: 1, brebis: 2 }[ls[0]] ?? 4, { vache: "Lait de vache", chevre: "Lait de chèvre", brebis: "Lait de brebis" }[ls[0]] || "Autres laits"];
+  };
+  l.forEach(g => g._g = grp(g));
+  return l.sort((a, b) => GF.sort === "az" ? az(a, b) : (a._g[0] - b._g[0]) || az(a, b));
+}
+function drawGloss() {
+  const l = glResults();
+  $("gCount").textContent = l.length + (l.length > 1 ? " fromages" : " fromage");
+  if (!l.length) { $("gList").innerHTML = `<p class="gempty"><b>Aucun fromage trouvé</b>Essayez un autre mot ou effacez les filtres.</p>`; return; }
+  let html = "", cur = null;
+  l.forEach(g => {
+    if (g._g[1] !== cur) { if (cur !== null) html += "</ul>"; cur = g._g[1]; html += `<h3 class="ghead">${esc(cur)}</h3><ul class="glist">`; }
+    const p = PATE[g.pate_code];
+    const where = g.kind === "aop" ? g.regions.join(" et ") : g.pays;
+    html += `<li><button class="grow-row" type="button" data-gl="${g.key}">${g.mini ? `<img src="${g.mini}" alt="" loading="lazy" width="64" height="48">` : `<span class="ni" aria-hidden="true">${esc(g.nom[0])}</span>`}<span style="min-width:0"><span class="nm">${esc(g.nom)}</span><span class="mt">${esc(where)} · ${esc(g.lait)}</span></span><span class="pt">${p ? `<i style="background:${p.c}"></i>${p.ab}` : (g.kind === "etr" ? "Étranger" : "")}</span></button></li>`;
+  });
+  $("gList").innerHTML = html + "</ul>";
+}
+function renderGloss() { drawGlossFilters(); drawGloss(); }
+$("gList").addEventListener("click", e => { const b = e.target.closest("[data-gl]"); b && go("gl-" + b.dataset.gl); });
+/* les AOP uniques prennent la clé de leur première région */
+U.forEach(u => { u.key = byName[u.nom][0].key; });
+
 /* ================= FICHE ================= */
-let list = [], fi = 0, ftype = "aop", busy = false, dragX = 0;
+let list = [], fi = 0, fctx = "region", busy = false, dragX = 0;
 function openFiche(fc) {
-  ftype = fc.type;
-  if (ftype === "aop") { list = visible(curRegion); fi = list.indexOf(fc.item); if (fi < 0) { list = curRegion.list; fi = list.indexOf(fc.item); } }
+  fctx = fc.ctx;
+  if (fctx === "region") { list = visible(curRegion); fi = list.indexOf(fc.item); if (fi < 0) { list = curRegion.list; fi = list.indexOf(fc.item); } }
+  else if (fctx === "gl") { list = glResults(); fi = list.indexOf(fc.item); if (fi < 0) { list = GALL; fi = GALL.indexOf(fc.item); } }
   else { list = E; fi = E.indexOf(fc.item); }
   fill();
   if ($("sheet").hidden) { $("sheet").hidden = false; document.body.style.overflow = "hidden"; $("fClose").focus({ preventScroll: true }); }
@@ -231,12 +302,12 @@ function fill() {
   if (f.photo) { img.hidden = false; $("fNoImg").hidden = true; img.src = f.photo; img.alt = "Photo du fromage " + f.nom; }
   else { img.hidden = true; $("fNoImg").hidden = false; img.removeAttribute("src"); }
   $("fName").textContent = f.nom;
-  if (ftype === "aop") {
+  if (f.kind === "aop") {
     const p = PATE[f.pate_code];
     $("fReg").textContent = f.region;
     $("fFacts").innerHTML = `<div><dt>Lait</dt><dd>${esc(f.lait)}</dd></div><div><dt>Pâte</dt><dd title="${p.nom}"><i style="background:${p.c}"></i>${p.ab}</dd></div><div><dt>Signe</dt><dd>AOP</dd></div>`;
     $("fPartH").textContent = "Particularités"; $("fPart").textContent = typo(f.particularites);
-    const others = byName[f.nom].filter(x => x !== f);
+    const others = byName[f.nom].filter(x => x.region_id !== f.region_id);
     $("fAlso").hidden = !others.length; $("fAlso").textContent = others.length ? typo(`Aussi produit ${others.map(x => EN(x.region)).join(", ")}.`) : "";
     seen.fiches.add(f.nom);
   } else {
@@ -250,7 +321,7 @@ function fill() {
   $("fCount").textContent = (fi + 1) + " / " + list.length;
   $("fPrev").disabled = fi === 0; $("fNext").disabled = fi === list.length - 1;
 }
-function ficheHash(f) { return ftype === "aop" ? "#fiche-" + f.key : "#etranger-" + f.slug; }
+function ficheHash(f) { return fctx === "gl" ? "#gl-" + f.key : fctx === "region" ? "#fiche-" + f.key : "#etranger-" + f.slug; }
 function step(dir, from = 0) {
   const img = $("fImg"), fb = document.querySelector(".fb"), w = $("ph").clientWidth, n = fi + dir;
   if (busy) return;
@@ -266,7 +337,7 @@ function step(dir, from = 0) {
   }, () => busy = false);
 }
 function closeFiche() { if ($("sheet").hidden) return; $("sheet").hidden = true; document.body.style.overflow = ""; }
-const closeTarget = () => ftype === "aop" ? curRegion.slug : "etrangers";
+const closeTarget = () => fctx === "gl" ? "glossaire" : fctx === "region" ? curRegion.slug : "etrangers";
 $("fPrev").onclick = () => step(-1); $("fNext").onclick = () => step(1);
 dragger($("ph"), {
   onMove(dx) { if (busy || $("fImg").hidden) return; let x = dx; if ((fi === 0 && x > 0) || (fi === list.length - 1 && x < 0)) x *= .3; dragX = x; $("fImg").style.transform = `translateX(${x}px)`; },
