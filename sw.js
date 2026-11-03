@@ -1,7 +1,7 @@
 // Fonctionnement hors connexion : toute l'appli (photos comprises) est mise en cache
 // à la première visite, pour fonctionner ensuite sans réseau, quiz compris.
 // Changer VERSION à chaque mise à jour pour rafraîchir le cache.
-const VERSION = "fromages-v10";
+const VERSION = "fromages-v11";
 const FICHIERS = [
  "./",
  "index.html",
@@ -11,6 +11,7 @@ const FICHIERS = [
  "manifest.webmanifest",
  "img/souris.webp",
  "img/logo-aop.webp",
+ "img/couronne.webp",
  "img/icone/apple-touch-icon.png",
  "img/icone/favicon-32.png",
  "img/icone/favicon-64.png",
