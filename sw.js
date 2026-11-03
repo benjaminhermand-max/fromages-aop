@@ -1,7 +1,7 @@
 // Fonctionnement hors connexion : toute l'appli (photos comprises) est mise en cache
 // à la première visite, pour fonctionner ensuite sans réseau, quiz compris.
 // Changer VERSION à chaque mise à jour pour rafraîchir le cache.
-const VERSION = "fromages-v9";
+const VERSION = "fromages-v10";
 const FICHIERS = [
  "./",
  "index.html",
