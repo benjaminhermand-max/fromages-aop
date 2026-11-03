@@ -627,11 +627,11 @@ button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
 <button class="totop" id="totop" type="button" aria-label="Remonter en haut" data-off><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="data/aop.js"></script>
-<script src="data/etrangers.js"></script>
-<script src="app.js"></script>
+<script src="data/aop.js?v=5"></script>
+<script src="data/etrangers.js?v=5"></script>
+<script src="app.js?v=5"></script>
 <script>
-if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); }); }
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); }); }
 </script>
 </body>
 </html>

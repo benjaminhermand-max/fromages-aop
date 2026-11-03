@@ -18,7 +18,7 @@ Site statique, sans installation : il suffit d'ouvrir `index.html`. Hébergé su
 - `img/` : photos, aquarelles et icônes
 - `sw.js` : le fonctionnement hors connexion
 
-Pour publier une mise à jour, augmenter `VERSION` dans `sw.js`.
+Pour publier une mise à jour, augmenter `VERSION` dans `sw.js` et le numéro `?v=` des trois scripts dans `index.html`.
 
 ## Crédits
 

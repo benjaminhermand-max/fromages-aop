@@ -193,7 +193,7 @@ $("map").innerHTML = R.map(r => `<a href="#${r.n ? r.slug : ""}" class="${r.n ? 
       return `<text x="${x}" y="${y}">${lines.map((l, i) => `<tspan x="${x}" dy="${i ? 9 : 0}">${esc(l)}</tspan>`).join("")}<tspan x="${x}" dy="9" class="${r.n ? "cnt" : "none"}">${r.n ? r.n + " AOP" : "aucune"}</tspan></text>`; }).join("")}</g>`;
 $("map").addEventListener("click", e => { const a = e.target.closest("[data-reg]"); if (!a) return; e.preventDefault(); openRegion(a.dataset.reg); });
 function renderRegionList() {
-  $("rlist").innerHTML = R.map(r => `<li><button class="rrow ${r.n ? "" : "none"}" type="button" data-reg="${r.id}"><span class="no">${r.ord}</span><i style="background:${r.c}"></i><span class="nm">${esc(r.nom)}</span><span class="ct">${r.n ? r.n + " AOP" : "aucune AOP"}</span>${seen.regions.has(r.id) ? '<span class="seen" title="Déjà visitée" aria-label="déjà visitée">✓</span>' : ""}</button></li>`).join("");
+  $("rlist").innerHTML = R.map(r => `<li><button class="rrow ${r.n ? "" : "none"}" type="button" data-reg="${r.id}"><span class="no">${r.ord}</span><i style="background:${r.c}"></i><span class="nm">${esc(r.nom)}</span><span class="ct">${r.n ? r.n + " AOP" : "aucune AOP"}</span></button></li>`).join("");
 }
 $("rlist").addEventListener("click", e => { const b = e.target.closest("[data-reg]"); b && openRegion(b.dataset.reg); });
 function openRegion(id) { const r = RID[id]; if (!r.n) { say(r.nom + " n’a pas de fromage AOP."); return; } go(r.slug); }

@@ -1,7 +1,7 @@
 // Fonctionnement hors connexion : toute l'appli (photos comprises) est mise en cache
 // à la première visite, pour fonctionner ensuite sans réseau, quiz compris.
 // Changer VERSION à chaque mise à jour pour rafraîchir le cache.
-const VERSION = "fromages-v4";
+const VERSION = "fromages-v5";
 const FICHIERS = [
  "./",
  "index.html",
@@ -162,11 +162,12 @@ self.addEventListener("activate", (e) => {
   e.waitUntil(caches.keys().then((cles) => Promise.all(cles.filter((k) => k !== VERSION).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
 });
 
-// Réseau d'abord (contenu toujours à jour), cache en secours (hors connexion).
+// Réseau d'abord, sans passer par le cache du navigateur (contenu toujours à jour),
+// et la copie hors connexion en secours.
 self.addEventListener("fetch", (e) => {
   if (e.request.method !== "GET" || e.request.headers.has("range")) return;
   e.respondWith(
-    fetch(e.request).then((r) => {
+    fetch(e.request, { cache: "no-cache" }).then((r) => {
       if (r.ok && (new URL(e.request.url).origin === location.origin || e.request.url.includes("fonts.g"))) {
         const copie = r.clone();
         caches.open(VERSION).then((c) => c.put(e.request, copie));
