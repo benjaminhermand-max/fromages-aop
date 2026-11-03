@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Fromages AOP</title>
+<meta name="description" content="Les fromages AOP de France : fabrication, AOP des régions, fromages étrangers et quiz. Cours de M. Hermand, lycée Ambroise Croizat.">
+<meta name="theme-color" content="#F5EDE0">
+<meta name="color-scheme" content="light">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="img/icone/favicon-32.png">
+<link rel="icon" type="image/png" sizes="64x64" href="img/icone/favicon-64.png">
+<link rel="apple-touch-icon" href="img/icone/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Fromages AOP">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,600&family=Source+Sans+3:wght@400;600;700&display=swap">
+<style>
+/* Carnet de route, toujours clair : colonne type téléphone, s'élargit sur ordinateur */
+:root{
+  --paper:#F5EDE0; --surface:#FFFCF6; --ink:#2B2420; --muted:#6A5D50;
+  --line:#E2D4BF; --accent:#A84A24; --accent-ink:#5A2A12; --accent-soft:#F2DCCB;
+  --ok:#3E6B45; --ok-soft:#E3EEDF; --ko:#9B2C2C; --ko-soft:#F6DEDA;
+  --cheese:#F1C75B; --cheese-deep:#D9A23A; --rind:#B9792E;
+  --ocre:#D9A23A; --sauge:#7E9A6E; --bleu:#5F86A8;
+  --p-ppc:#D64541; --p-ppnc:#E79AA6; --p-pers:#2F7FD6; --p-lavee:#E8892B; --p-fleurie:#8D8D8D; --p-chevre:#E9C840;
+  --f-display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --f-body:'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top, 0px); padding-bottom:env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;
+  background-color:var(--paper);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .35 0 0 0 0 .25 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  color:var(--ink); font-family:var(--f-body); font-size:16px; line-height:1.5;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:30;background:var(--paper)}
+img{max-width:100%;height:auto}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.page{max-width:900px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 64px}
+
+/* Barre du haut des pages intérieures */
+.bar{position:sticky;top:env(safe-area-inset-top, 0px);z-index:20;background:color-mix(in srgb, var(--paper) 92%, transparent);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.bar-in{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:10px;padding-left:max(10px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:8px}
+.back{display:inline-flex;align-items:center;gap:2px;background:none;border:0;padding:6px 8px;border-radius:10px;cursor:pointer;color:var(--accent);font-weight:600;flex:0 0 auto}
+.back:hover{background:var(--accent-soft)}
+.bar-t{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.15rem;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Titres */
+.vh{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:clamp(2.1rem,8vw,3rem);line-height:1.05;margin:4px 0 0;text-wrap:balance}
+.lead{color:var(--muted);margin:8px 0 0;max-width:36em;font-size:1.06rem}
+.sec{margin-top:40px}
+.sec h3{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.55rem;margin:0;line-height:1.15}
+.kicker{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 4px}
+.hint{color:var(--muted);margin:4px 0 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px}
+.plate{margin:14px 0 0;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.plate img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover}
+
+/* ======== ACCUEIL ======== */
+.stage{position:relative;overflow-x:clip}
+h1{margin:6px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600;line-height:1;font-size:clamp(3.6rem, 16vw, 6.4rem);letter-spacing:-.01em;display:flex;align-items:flex-end}
+.o-wrap{display:inline-block;width:.78em;height:.78em;margin:0 .02em .02em;position:relative}
+.o-wrap svg{width:100%;height:100%;display:block;overflow:visible}
+.lane{position:relative;height:48px;margin-top:-6px}
+.lane::after{content:"";position:absolute;left:0;right:0;bottom:6px;border-bottom:1.5px dashed var(--line)}
+.sub{margin:4px 0 0;font-family:var(--f-display);font-style:italic;font-weight:500;color:var(--accent);font-size:clamp(1.5rem,6vw,2.1rem);line-height:1.1}
+.intro{margin:12px 0 0;max-width:34em;color:var(--muted)}
+.mouse{position:absolute;left:0;top:0;width:96px;height:79px;z-index:5;pointer-events:none;will-change:transform}
+.mouse::after{content:"";position:absolute;left:18%;right:14%;bottom:1px;height:7px;border-radius:50%;background:rgba(43,36,32,.16);filter:blur(1.5px);z-index:-1}
+.mouse img{position:absolute;inset:0;width:100%;height:100%;display:block;transform-origin:55% 96%}
+.mouse.run img{animation:hop .3s cubic-bezier(.3,.7,.4,1) infinite}
+.mouse.run::after{animation:shadow .3s cubic-bezier(.3,.7,.4,1) infinite}
+.mouse.nibble img{animation:chew .19s ease-in-out infinite alternate}
+.mouse.happy img{animation:joy .55s ease-out 1}
+@keyframes hop{0%{transform:translateY(0) scale(1.04,.96)}45%{transform:translateY(-10px) rotate(-5deg) scale(.98,1.03)}90%{transform:translateY(0) rotate(0) scale(1,1)}100%{transform:translateY(0) scale(1.04,.96)}}
+@keyframes shadow{0%,100%{transform:scaleX(1)}45%{transform:scaleX(.7);opacity:.6}}
+@keyframes chew{from{transform:rotate(0) translateY(0)}to{transform:rotate(3.5deg) translateY(1.5px) scale(1.01,.98)}}
+@keyframes joy{0%,100%{transform:translateY(0)}35%{transform:translateY(-9px) rotate(-3deg)}65%{transform:translateY(0) scale(1.05,.95)}}
+.bite{transform-box:fill-box;transform-origin:center;transform:scale(0)}
+.crumb{position:absolute;left:0;top:0;width:8px;height:7px;background:var(--cheese);border:1px solid var(--cheese-deep);border-radius:45% 60% 40% 55%;z-index:6;pointer-events:none}
+.menu{list-style:none;margin:26px 0 0;padding:0;display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:640px){.menu{grid-template-columns:1fr 1fr}}
+.tile{width:100%;display:flex;align-items:center;gap:14px;text-align:left;cursor:pointer;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;
+  box-shadow:0 1px 0 var(--line), 0 6px 18px -14px rgba(90,42,18,.35);transition:transform .15s ease, border-color .15s ease}
+.tile:hover{transform:translateY(-2px);border-color:var(--accent)}
+.tile svg.ic{flex:0 0 auto;width:64px;height:64px;overflow:visible}
+.tile .txt{min-width:0;flex:1}
+.tile .t{display:block;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.3rem;line-height:1.15}
+.tile .d{display:block;color:var(--muted);font-size:.93rem;margin-top:2px}
+.tile .chev{flex:0 0 auto;color:var(--accent);font-size:1.3rem}
+.stamps{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0;padding:0;list-style:none}
+.stamps li{border:1.5px solid var(--accent);color:var(--accent);border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:600;background:var(--surface)}
+.stamps b{font-family:var(--f-display);font-style:italic;font-size:1.05rem;margin-right:3px}
+.foot{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:26px;padding-top:16px;border-top:1px solid var(--line);font-size:.92rem}
+.linkbtn{background:none;border:0;padding:0;color:var(--accent);font-weight:600;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.sig{margin-top:14px;font-size:.85rem;color:var(--muted)}
+
+/* ======== FABRICATION ======== */
+.figs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+@media (min-width:720px){.figs{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.fig{padding:12px 14px}
+.fig b{display:block;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.7rem;line-height:1.1;color:var(--accent)}
+.fig span{display:block;font-size:.9rem;color:var(--muted);line-height:1.3;margin-top:2px}
+.src{font-size:.8rem;color:var(--muted);margin:8px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:.92rem;font-weight:600}
+.chip i{width:11px;height:11px;border-radius:50%;flex:0 0 auto;border:1px solid rgba(43,36,32,.25)}
+.note{font-size:.92rem;color:var(--muted);margin:8px 0 0}
+.steps{margin-top:14px;overflow:hidden}
+.strip{display:flex;gap:6px;overflow-x:auto;padding:12px 12px 0;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.strip button{flex:0 0 auto;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 12px;cursor:pointer;font-weight:600;font-size:.88rem;color:var(--muted)}
+.strip button[aria-current="step"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.step-view{position:relative;overflow:hidden;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
+.step-view.dragging{cursor:grabbing}
+.track{display:flex;transition:transform .45s cubic-bezier(.22,.8,.3,1);will-change:transform}
+.track.dragging{transition:none}
+.slide{flex:0 0 100%;min-width:0}
+.step-img{margin:12px 12px 0;border-radius:12px;overflow:hidden;aspect-ratio:4/3;background:var(--paper)}
+.step-img img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none}
+.step-txt{padding:12px 16px 16px}
+.step-txt .n{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.step-txt h4{margin:2px 0 6px;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.6rem;line-height:1.1}
+.step-txt p{margin:0;max-width:38em}
+.arrow{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:grid;place-items:center;box-shadow:0 4px 12px -6px rgba(43,36,32,.4)}
+.arrow:disabled{opacity:.35;cursor:default}
+.steps-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 16px 16px}
+.dots{display:flex;gap:6px}
+.dots span{width:8px;height:8px;border-radius:50%;background:var(--line);transition:width .2s}
+.dots span.on{background:var(--accent);width:20px;border-radius:5px}
+.pates{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+@media (min-width:600px){.pates{grid-template-columns:1fr 1fr}}
+@media (min-width:860px){.pates{grid-template-columns:1fr 1fr 1fr}}
+.pate{display:grid;grid-template-columns:auto 1fr;gap:0 12px;padding:12px 14px;align-items:start}
+.pate .ab{grid-row:span 3;width:56px;height:56px;border-radius:12px;display:grid;place-items:center;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.05rem;border:1px solid rgba(43,36,32,.15)}
+.pate .nm{font-weight:700;line-height:1.25}
+.pate .ct{font-size:.88rem;color:var(--accent);font-weight:600}
+.pate .ex{font-size:.9rem;color:var(--muted);line-height:1.35;margin-top:2px}
+.pate .tip{display:inline-block;margin-top:6px;font-size:.82rem;font-weight:700;color:var(--accent-ink);background:var(--accent-soft);border-radius:999px;padding:2px 10px}
+.pate .tip b{font-family:var(--f-display);font-style:italic;letter-spacing:.12em}
+.aop{margin-top:14px;padding:16px 18px;border-left:4px solid var(--accent);border-radius:4px 16px 16px 4px;display:flex;gap:16px;align-items:center}
+.aop img{flex:0 0 auto;width:96px;height:auto}
+@media (max-width:420px){.aop img{width:78px}}
+.aop .txt{min-width:0}
+.aop .big{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.35rem;line-height:1.2}
+.aop p{margin:6px 0 0}
+.cta{display:inline-flex;align-items:center;gap:8px;margin-top:28px;background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:11px 20px;font-weight:700;cursor:pointer}
+.cta:hover{background:var(--accent-ink)}
+.cta.ghost{background:var(--surface);color:var(--accent);border:1.5px solid var(--accent)}
+.cta.ghost:hover{background:var(--accent-soft)}
+
+/* ======== RÉGIONS ======== */
+.mapcard{margin-top:16px;padding:10px}
+.mapcard svg{display:block;width:100%;height:auto;max-height:560px}
+.mapcard path{stroke:var(--surface);stroke-width:1.2;stroke-linejoin:round;transition:filter .15s;cursor:pointer}
+.mapcard a:hover path,.mapcard a:focus-visible path{filter:brightness(.92) saturate(1.2)}
+.mapcard a:focus-visible{outline:none}
+.mapcard a:focus-visible path{stroke:var(--ink);stroke-width:2}
+.mapcard a.none path{cursor:default}
+.mapcard text{font-family:var(--f-body);font-size:8.2px;font-weight:700;fill:var(--ink);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:rgba(255,252,246,.75);stroke-width:2.4px}
+.mapcard text .cnt{fill:var(--accent-ink);font-size:7.6px}
+.mapcard text .none{fill:var(--muted);font-weight:600;font-style:italic}
+.maphint{text-align:center;color:var(--muted);font-size:.92rem;margin:4px 0 2px}
+.rlist{list-style:none;margin:18px 0 0;padding:0;display:grid;grid-template-columns:1fr;gap:8px}
+@media (min-width:640px){.rlist{grid-template-columns:1fr 1fr}}
+.rrow{width:100%;display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;cursor:pointer;text-align:left}
+.rrow:hover{border-color:var(--accent)}
+.rrow .no{width:22px;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.85rem;text-align:right}
+.rrow i{width:14px;height:14px;border-radius:4px;flex:0 0 auto}
+.rrow .nm{flex:1;min-width:0;font-weight:600}
+.rrow .ct{font-size:.9rem;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+.rrow.none{cursor:default;background:transparent}
+.rrow.none .ct{color:var(--muted);font-weight:600;font-style:italic}
+.rrow .seen{color:var(--ok);font-weight:700}
+
+/* ======== UNE RÉGION ======== */
+.rhead{display:grid;grid-template-columns:1fr;gap:14px;align-items:center}
+@media (min-width:640px){.rhead{grid-template-columns:220px 1fr}}
+.rhead img{width:100%;max-width:260px;height:auto;aspect-ratio:1;object-fit:cover;border-radius:18px;border:1px solid var(--line);display:block;background:var(--surface)}
+.rnav{display:flex;justify-content:space-between;gap:10px;margin-top:28px}
+.rnav button{max-width:48%}
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin-top:20px}
+.filters button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px;cursor:pointer;font-weight:600;font-size:.9rem}
+.filters button i{width:10px;height:10px;border-radius:50%}
+.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+@media (min-width:640px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.fc{display:flex;flex-direction:column;text-align:left;cursor:pointer;padding:0;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:14px;transition:transform .15s, border-color .15s}
+.fc:hover{transform:translateY(-2px);border-color:var(--accent)}
+.fc img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--paper)}
+.fc .b{padding:8px 10px 10px;min-width:0}
+.fc .nm{display:block;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.08rem;line-height:1.15}
+.fc .mt{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--muted);margin-top:3px}
+.fc .mt i{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.fc .noimg{display:grid;place-items:center;aspect-ratio:4/3;background:var(--accent-soft);font-family:var(--f-display);font-style:italic;font-size:2rem;color:var(--accent)}
+.country{margin-top:28px}
+.country h3{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.4rem;margin:0;display:flex;align-items:baseline;gap:10px}
+.country h3 span{font-family:var(--f-body);font-style:normal;font-size:.85rem;font-weight:600;color:var(--muted)}
+.country .grid{margin-top:10px}
+
+/* ======== FICHE ======== */
+.sheet{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;background:rgba(43,36,32,.45)}
+@media (min-width:720px){.sheet{align-items:center;padding:24px}}
+.sheet-in{position:relative;width:100%;max-width:720px;max-height:100%;overflow:auto;overscroll-behavior:contain;background:var(--surface);border-radius:20px 20px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom, 0px));box-shadow:0 -10px 40px -10px rgba(43,36,32,.4)}
+@media (min-width:720px){.sheet-in{border-radius:20px}}
+.ph{position:relative;background:var(--paper);aspect-ratio:4/3;touch-action:pan-y;user-select:none;-webkit-user-select:none;overflow:hidden}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;will-change:transform}
+.ph .noimg{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-style:italic;color:var(--muted)}
+.ph .arrow{position:absolute;top:50%;transform:translateY(-50%)}
+.ph .prev{left:calc(10px + env(safe-area-inset-left, 0px))}
+.ph .next{right:calc(10px + env(safe-area-inset-right, 0px))}
+.ph .count{position:absolute;right:12px;bottom:10px;background:rgba(43,36,32,.7);color:var(--surface);font-size:.82rem;font-weight:600;padding:2px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.close{position:absolute;top:10px;right:calc(10px + env(safe-area-inset-right, 0px));z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,252,246,.92);cursor:pointer;font-size:1.4rem;line-height:1;display:grid;place-items:center;box-shadow:0 2px 10px -4px rgba(43,36,32,.5)}
+.fb{padding:16px 20px 0;transition:opacity .2s}
+.fb .eb{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0}
+.fb h2{margin:2px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:clamp(1.9rem,7vw,2.5rem);line-height:1.05}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 0}
+.facts div{background:var(--paper);border-radius:12px;padding:8px 10px;min-width:0}
+.facts dt{font-size:.74rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.facts dd{margin:2px 0 0;font-weight:700;line-height:1.25;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.facts dd i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.fb h3{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.2rem;margin:18px 0 4px}
+.fb p{margin:0}
+.also{margin-top:12px !important;font-size:.92rem;color:var(--muted)}
+
+/* ======== QUIZ ======== */
+.modes{display:grid;grid-template-columns:1fr;gap:10px;margin-top:18px}
+@media (min-width:640px){.modes{grid-template-columns:1fr 1fr}}
+.mode{display:flex;gap:14px;align-items:center;text-align:left;cursor:pointer;padding:14px 16px;background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.mode:hover{border-color:var(--accent)}
+.mode .mi{flex:0 0 auto;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.3rem;color:var(--ink)}
+.mode .t{display:block;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.2rem;line-height:1.15}
+.mode .d{display:block;color:var(--muted);font-size:.9rem}
+.mode .best{display:block;font-size:.84rem;font-weight:700;color:var(--ok);margin-top:2px}
+.mode.big{grid-column:1/-1;border:1.5px solid var(--accent);background:linear-gradient(0deg,var(--surface),var(--surface))}
+.qtop{display:flex;align-items:center;gap:12px;margin-top:4px}
+.qbar{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.qbar span{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .3s}
+.qnum{font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;font-size:.92rem}
+.qpart{margin:16px 0 0;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:700}
+.qq{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:clamp(1.35rem,5vw,1.7rem);line-height:1.2;margin:6px 0 0;text-wrap:balance}
+.qctx{margin:8px 0 0;padding:10px 14px;border-radius:12px;background:var(--surface);border:1px solid var(--line);color:var(--ink)}
+.qimg{margin-top:12px;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:var(--surface);max-width:520px}
+.qimg img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.opts{display:grid;gap:8px;margin-top:16px;grid-template-columns:1fr}
+@media (min-width:640px){.opts{grid-template-columns:1fr 1fr}}
+.opt{display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-weight:600;min-height:52px}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt .k{flex:0 0 auto;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--paper);font-size:.85rem;color:var(--muted)}
+.opt:disabled{cursor:default}
+.opt.good{border-color:var(--ok);background:var(--ok-soft);color:var(--ok)}
+.opt.good .k{background:var(--ok);color:var(--surface)}
+.opt.bad{border-color:var(--ko);background:var(--ko-soft);color:var(--ko)}
+.opt.bad .k{background:var(--ko);color:var(--surface)}
+.fbk{margin-top:14px;padding:12px 14px;border-radius:12px;font-weight:600}
+.fbk.good{background:var(--ok-soft);color:var(--ok)}
+.fbk.bad{background:var(--ko-soft);color:var(--ko)}
+.fbk p{margin:2px 0 0;font-weight:400;color:var(--ink)}
+.qnext{margin-top:14px}
+.res{text-align:center;padding:28px 18px;margin-top:10px}
+.res .sc{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:3.4rem;line-height:1;color:var(--accent)}
+.res .sc small{font-size:1.6rem;color:var(--muted)}
+.res .msg{font-size:1.1rem;margin-top:8px}
+.parts{list-style:none;margin:16px auto 0;padding:0;max-width:420px;text-align:left;display:grid;gap:6px}
+.parts li{display:flex;justify-content:space-between;gap:10px;padding:6px 10px;background:var(--paper);border-radius:8px;font-size:.95rem}
+.parts b{font-variant-numeric:tabular-nums}
+.res .acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
+.res .acts .cta{margin-top:0}
+.review{margin-top:24px}
+.review h3{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.3rem;margin:0 0 8px}
+.review ol{margin:0;padding-left:1.3em;display:grid;gap:8px}
+.review li{line-height:1.35}
+.review .ans{color:var(--ok);font-weight:700}
+.review .was{color:var(--ko)}
+
+/* ======== TROPHÉES & CRÉDITS ======== */
+.tros{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:18px}
+@media (min-width:640px){.tros{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.tro{padding:14px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px}
+.tro svg{width:56px;height:56px}
+.tro .t{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.08rem;line-height:1.15}
+.tro .d{font-size:.85rem;color:var(--muted);line-height:1.3}
+.tro.lock{opacity:.55}
+.tro.lock svg{filter:grayscale(1)}
+.trocount{font-weight:700;color:var(--accent)}
+.cr-h{font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.3rem;margin:30px 0 8px}
+.cr{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+@media (min-width:720px){.cr{grid-template-columns:1fr 1fr}}
+.cr li{display:grid;grid-template-columns:56px 1fr;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px}
+.cr img{width:56px;height:42px;object-fit:cover;border-radius:6px;display:block}
+.cr .t{font-weight:700;line-height:1.2}
+.cr .m{font-size:.86rem;color:var(--muted);line-height:1.35;min-width:0;overflow-wrap:anywhere}
+.cr a{color:var(--accent)}
+
+.totop{position:fixed;right:calc(16px + env(safe-area-inset-right, 0px));bottom:calc(18px + env(safe-area-inset-bottom, 0px));z-index:25;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--accent);cursor:pointer;display:grid;place-items:center;box-shadow:0 6px 16px -8px rgba(43,36,32,.5);transition:opacity .2s, transform .2s}
+.totop[data-off]{opacity:0;transform:translateY(10px);pointer-events:none}
+.toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom, 0px));transform:translateX(-50%);z-index:50;background:var(--ink);color:var(--surface);padding:9px 16px;border-radius:999px;font-size:.92rem;opacity:0;transition:opacity .25s;pointer-events:none;width:max-content;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion: reduce){.mouse img,.mouse::after{animation:none!important}.tile,.fc{transition:none}.track{transition:none}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="wc" x="-25%" y="-25%" width="150%" height="150%">
+      <feTurbulence type="fractalNoise" baseFrequency=".045" numOctaves="3" seed="7"/>
+      <feDisplacementMap in="SourceGraphic" scale="11"/>
+      <feGaussianBlur stdDeviation=".5"/>
+    </filter>
+    <pattern id="hatch" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="5" height="5" fill="#EADFCD"/><line x1="0" y1="0" x2="0" y2="5" stroke="#D8C9B3" stroke-width="2"/>
+    </pattern>
+  </defs>
+</svg>
+
+<header class="bar" id="bar" hidden>
+  <div class="bar-in">
+    <button class="back" id="back" type="button"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg><span id="backLbl">Accueil</span></button>
+    <span class="bar-t" id="barT"></span>
+  </div>
+</header>
+
+<main class="page">
+<!-- ============ ACCUEIL ============ -->
+<section class="view" id="v-home" data-title="Accueil">
+  <div class="stage" id="stage">
+    <h1 aria-label="Fromages">Fr<span class="o-wrap" id="oWrap" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <defs>
+          <mask id="bites">
+            <rect x="-10" y="-10" width="120" height="120" fill="#fff"/>
+            <circle class="bite" cx="12" cy="76" r="12" fill="#000"/>
+            <circle class="bite" cx="5" cy="58" r="11" fill="#000"/>
+            <circle class="bite" cx="24" cy="91" r="11" fill="#000"/>
+          </mask>
+        </defs>
+        <g mask="url(#bites)">
+          <circle cx="50" cy="52" r="44" fill="var(--rind)" filter="url(#wc)"/>
+          <circle cx="50" cy="52" r="37" fill="var(--cheese)"/>
+          <circle cx="36" cy="40" r="6" fill="var(--cheese-deep)" opacity=".75"/>
+          <circle cx="63" cy="62" r="7.5" fill="var(--cheese-deep)" opacity=".75"/>
+          <circle cx="62" cy="34" r="3.6" fill="var(--cheese-deep)" opacity=".75"/>
+          <circle cx="40" cy="68" r="3.2" fill="var(--cheese-deep)" opacity=".75"/>
+          <circle cx="50" cy="52" r="44" fill="none" stroke="var(--ink)" stroke-width="2.4"/>
+        </g>
+      </svg></span>mages</h1>
+    <div class="lane" id="lane"></div>
+    <p class="sub">Les 47 AOP de France</p>
+    <p class="intro">Du lait au plateau&nbsp;: la fabrication, les fromages AOP de chaque région, les grands fromages étrangers, et des quiz pour réviser.</p>
+
+    <ul class="menu" id="menu">
+      <li><button class="tile" data-go="fabrication">
+        <svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="25" fill="var(--ocre)" opacity=".5" filter="url(#wc)"/>
+          <path d="M17 15h10M18.5 15v5c0 2-4.5 4-4.5 8v20a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V28c0-4-4.5-6-4.5-8v-5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M14 33h16M14 44h16" stroke="var(--ink)" stroke-width="1.6" fill="none"/><path d="M11 30c-2.5 0-2.5 6 0 6M33 30c2.5 0 2.5 6 0 6" stroke="var(--ink)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <path d="M36 50l20-12v12z" fill="var(--cheese)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><path d="M36 50l20-12" stroke="var(--rind)" stroke-width="3.4" stroke-linecap="round"/><path d="M36 50l20-12v12z" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="49" cy="46" r="1.9" fill="var(--cheese-deep)"/><circle cx="53" cy="43.5" r="1.3" fill="var(--cheese-deep)"/></svg>
+        <span class="txt"><span class="t">La fabrication</span><span class="d">Les 3 laits, les 5 étapes, les 6 familles de pâtes</span></span><span class="chev" aria-hidden="true">›</span></button></li>
+      <li><button class="tile" data-go="regions">
+        <svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="25" fill="var(--accent)" opacity=".38" filter="url(#wc)"/>
+          <path d="M30 13l8 4 9 1 1 8 4 7-5 6 1 9-8 4-8-1-6 4-7-4-2-7-6-6 4-6-2-7 7-3z" fill="var(--surface)" stroke="var(--ink)" stroke-width="2" stroke-linejoin="round"/><circle cx="37" cy="36" r="3" fill="var(--accent)"/></svg>
+        <span class="txt"><span class="t">Les AOP des régions</span><span class="d">47 fromages, de l’Auvergne-Rhône-Alpes à la Corse</span></span><span class="chev" aria-hidden="true">›</span></button></li>
+      <li><button class="tile" data-go="etrangers">
+        <svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="25" fill="var(--sauge)" opacity=".48" filter="url(#wc)"/>
+          <circle cx="32" cy="33" r="15" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/><ellipse cx="32" cy="33" rx="6.5" ry="15" fill="none" stroke="var(--ink)" stroke-width="1.6"/><path d="M17 33h30M19 26h26M19 40h26" stroke="var(--ink)" stroke-width="1.6" fill="none"/></svg>
+        <span class="txt"><span class="t">Les fromages étrangers</span><span class="d">Cheddar, Parmesan, Feta, Edam et les autres</span></span><span class="chev" aria-hidden="true">›</span></button></li>
+      <li><button class="tile" data-go="quiz">
+        <svg class="ic" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="34" r="25" fill="var(--bleu)" opacity=".42" filter="url(#wc)"/>
+          <text x="32" y="46" text-anchor="middle" font-family="Fraunces, Georgia, serif" font-style="italic" font-weight="600" font-size="38" fill="var(--ink)">?</text></svg>
+        <span class="txt"><span class="t">L’espace quiz</span><span class="d">Photos, régions, pâtes, contrôle blanc sur 20</span></span><span class="chev" aria-hidden="true">›</span></button></li>
+    </ul>
+  </div>
+  <ul class="stamps" aria-label="Chiffres clés">
+    <li><b>47</b> fromages AOP</li><li><b>6</b> familles de pâtes</li><li><b>3</b> laits</li><li><b>27 kg</b> par Français et par an</li>
+  </ul>
+  <nav class="foot"><button class="linkbtn" data-go="trophees" id="troLink">Mes trophées</button><button class="linkbtn" data-go="credits">Crédits photos</button></nav>
+  <p class="sig">Cours de M. Hermand · Lycée Ambroise Croizat, Moûtiers</p>
+</section>
+
+<!-- ============ FABRICATION ============ -->
+<section class="view" id="v-fabrication" data-title="La fabrication" hidden>
+  <h2 class="vh">La fabrication</h2>
+  <p class="lead">Un fromage est un produit issu de la coagulation du lait. La matière première utilisée est donc le lait.</p>
+  <div class="sec">
+    <p class="kicker">Le fromage en France</p>
+    <h3>Quelques chiffres</h3>
+    <div class="figs">
+      <div class="card fig"><b>47</b><span>fromages AOP en France</span></div>
+      <div class="card fig"><b>27 kg</b><span>de fromage par Français et par an</span></div>
+      <div class="card fig"><b>2ᵉ</b><span>pays consommateur au monde, derrière la Grèce</span></div>
+      <div class="card fig"><b>Normandie</b><span>1ʳᵉ région productrice de fromages au lait de vache</span></div>
+    </div>
+    <p class="src">Chiffres CNIEL (février 2026) et Agreste Normandie (mai 2025).</p>
+  </div>
+  <div class="sec">
+    <p class="kicker">La matière première</p>
+    <h3>Les 3 laits</h3>
+    <p class="hint">En France, les fromages AOP sont faits avec le lait de trois animaux.</p>
+    <figure class="plate" style="margin-inline:0"><img src="img/fab/fab-laits-640.webp" srcset="img/fab/fab-laits-640.webp 640w, img/fab/fab-laits-1200.webp 1200w" sizes="(min-width:900px) 868px, 100vw" alt="Une vache, une chèvre et une brebis dans un pré, devant trois bidons de lait" width="1200" height="896"></figure>
+    <div class="chips" id="laits"></div>
+    <p class="note">Le Brocciu (Corse) se fabrique au lait de brebis et/ou de chèvre.</p>
+  </div>
+  <div class="sec">
+    <p class="kicker">Du lait au fromage</p>
+    <h3>Les 5 étapes de l’élaboration</h3>
+    <p class="hint">Faites glisser l’image ou utilisez les flèches.</p>
+    <div class="card steps">
+      <div class="strip" id="strip" role="tablist" aria-label="Étapes"></div>
+      <div class="step-view" id="stepView"><div class="track" id="track"></div></div>
+      <div class="steps-nav">
+        <button class="arrow" id="stepPrev" type="button" aria-label="Étape précédente"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
+        <div class="dots" id="dots" aria-hidden="true"></div>
+        <button class="arrow" id="stepNext" type="button" aria-label="Étape suivante"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <p class="kicker">Les familles</p>
+    <h3>Les 6 familles de pâtes</h3>
+    <p class="hint">Chaque fromage AOP appartient à l’une de ces six familles.</p>
+    <div class="pates" id="pates"></div>
+  </div>
+  <div class="sec">
+    <p class="kicker">Le signe officiel</p>
+    <h3>AOP, ça veut dire quoi&nbsp;?</h3>
+    <div class="card aop">
+      <img src="img/logo-aop.webp" alt="Logo européen Appellation d’origine protégée, rouge et jaune" width="360" height="360">
+      <div class="txt"><div class="big">Appellation d’origine protégée</div>
+      <p>Le fromage est produit, transformé et élaboré dans une zone géographique précise, avec un savoir-faire reconnu et un cahier des charges à respecter. Ce logo européen figure sur l’emballage.</p></div>
+    </div>
+  </div>
+  <button class="cta" type="button" data-quiz="fab">Tester mes connaissances <span aria-hidden="true">›</span></button>
+</section>
+
+<!-- ============ RÉGIONS ============ -->
+<section class="view" id="v-regions" data-title="Les AOP des régions" hidden>
+  <h2 class="vh">Les AOP des régions</h2>
+  <p class="lead">Touchez une région pour voir ses fromages AOP. Les régions sont dans l’ordre du cours.</p>
+  <div class="card mapcard"><svg viewBox="0 0 340 328" id="map" role="group" aria-label="Carte des 13 régions de France"></svg>
+    <p class="maphint">Les régions hachurées n’ont pas de fromage AOP.</p></div>
+  <ol class="rlist" id="rlist"></ol>
+</section>
+
+<!-- ============ UNE RÉGION ============ -->
+<section class="view" id="v-region" data-title="" data-parent="regions" hidden>
+  <div class="rhead">
+    <img id="rImg" alt="" width="600" height="600">
+    <div>
+      <p class="kicker" id="rEb"></p>
+      <h2 class="vh" id="rName"></h2>
+      <p class="lead" id="rLead"></p>
+    </div>
+  </div>
+  <div class="filters" id="filters" role="group" aria-label="Filtrer par famille de pâte"></div>
+  <div class="grid" id="grid"></div>
+  <div class="rnav" id="rnav"></div>
+</section>
+
+<!-- ============ ÉTRANGERS ============ -->
+<section class="view" id="v-etrangers" data-title="Les fromages étrangers" hidden>
+  <h2 class="vh">Les fromages étrangers</h2>
+  <p class="lead">Huit grands fromages d’Europe à connaître pour conseiller un client. Touchez un fromage pour voir sa fiche.</p>
+  <div id="etrList"></div>
+  <button class="cta" type="button" data-quiz="etr">Tester mes connaissances <span aria-hidden="true">›</span></button>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section class="view" id="v-quiz" data-title="L’espace quiz" hidden>
+  <h2 class="vh">L’espace quiz</h2>
+  <p class="lead">Choisissez un quiz. Les questions changent à chaque partie.</p>
+  <div class="modes" id="modes"></div>
+</section>
+<section class="view" id="v-jeu" data-title="Quiz" data-parent="quiz" hidden>
+  <div id="jeu"></div>
+</section>
+
+<!-- ============ TROPHÉES ============ -->
+<section class="view" id="v-trophees" data-title="Mes trophées" hidden>
+  <h2 class="vh">Mes trophées</h2>
+  <p class="lead" id="troLead"></p>
+  <div class="tros" id="tros"></div>
+</section>
+
+<!-- ============ CRÉDITS ============ -->
+<section class="view" id="v-credits" data-title="Crédits photos" hidden>
+  <h2 class="vh">Crédits photos</h2>
+  <p class="lead">Les photos des fromages viennent de Wikimedia Commons, sous licences libres. Merci à leurs auteurs.</p>
+  <h3 class="cr-h">Illustrations</h3>
+  <ul class="cr" id="crIllu"></ul>
+  <h3 class="cr-h">Photos des fromages AOP</h3>
+  <ul class="cr" id="crPhotos"></ul>
+  <h3 class="cr-h" id="crEtrH">Photos des fromages étrangers</h3>
+  <ul class="cr" id="crEtr"></ul>
+</section>
+</main>
+
+<!-- ============ FICHE FROMAGE ============ -->
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="fName">
+  <div class="sheet-in">
+    <button class="close" id="fClose" type="button" aria-label="Fermer la fiche">×</button>
+    <div class="ph" id="ph">
+      <img id="fImg" alt="">
+      <div class="noimg" id="fNoImg" hidden>Photo à venir</div>
+      <button class="arrow prev" id="fPrev" type="button" aria-label="Fromage précédent"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 6-6 6 6 6"/></svg></button>
+      <button class="arrow next" id="fNext" type="button" aria-label="Fromage suivant"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg></button>
+      <span class="count" id="fCount"></span>
+    </div>
+    <div class="fb">
+      <p class="eb" id="fReg"></p>
+      <h2 id="fName"></h2>
+      <dl class="facts" id="fFacts"></dl>
+      <h3 id="fPartH">Particularités</h3>
+      <p id="fPart"></p>
+      <p class="also" id="fAlso" hidden></p>
+    </div>
+  </div>
+</div>
+
+<button class="totop" id="totop" type="button" aria-label="Remonter en haut" data-off><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="data/aop.js"></script>
+<script src="data/etrangers.js"></script>
+<script src="app.js"></script>
+<script>
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js"); }); }
+</script>
+</body>
+</html>
