@@ -1,4 +1,4 @@
-/* Les fromages étrangers du cours de M. Hermand (textes à valider) */
+/* Les fromages étrangers du cours de M. Hermand (textes relus par M. Hermand) */
 window.ETRANGERS = [
   { nom: "Cheddar", pays: "Royaume-Uni", origine: "Village de Cheddar, Somerset (Angleterre)", lait: "Vache", pate: "Pâte pressée non cuite",
     description: "Pâte ferme, de jaune pâle à orangé quand il est coloré au rocou. Le caillé est découpé en blocs que l’on empile et retourne plusieurs fois : c’est le « cheddaring ». L’un des fromages les plus consommés au monde.",

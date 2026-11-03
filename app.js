@@ -56,16 +56,19 @@ const TROPHIES = [
   ["explo",   "Explorateur",          "Ouvrir les 11 régions qui ont des fromages AOP"],
   ["fiches",  "Fin connaisseur",      "Ouvrir les fiches des 47 fromages AOP"],
   ["monde",   "Curieux du monde",     "Ouvrir les fiches des 8 fromages étrangers"],
-  ["q-fab",   "Apprenti fromager",    "8 sur 10 au quiz Fabrication"],
-  ["q-reg",   "Tour de France",       "8 sur 10 au quiz AOP des régions"],
-  ["q-photo", "Œil de l’affineur",    "8 sur 10 au quiz Photos"],
-  ["q-pate",  "Maître des pâtes",     "8 sur 10 au quiz Familles de pâtes"],
-  ["q-etr",   "Globe-trotteur",       "8 sur 10 au quiz Fromages étrangers"],
-  ["c10",     "Contrôle réussi",      "Au moins 10 sur 20 au contrôle blanc"],
-  ["c16",     "Mention très bien",    "Au moins 16 sur 20 au contrôle blanc"],
+  ["q-fab",   "Apprenti fromager",    "10 sur 10 au quiz Fabrication"],
+  ["q-reg",   "Tour de France",       "10 sur 10 au quiz AOP des régions"],
+  ["q-photo", "Œil de l’affineur",    "10 sur 10 au quiz Photos"],
+  ["q-pate",  "Maître des pâtes",     "10 sur 10 au quiz Familles de pâtes"],
+  ["q-etr",   "Globe-trotteur",       "10 sur 10 au quiz Fromages étrangers"],
   ["c20",     "Sans faute",           "20 sur 20 au contrôle blanc"]
 ];
 const won = new Set(store.get("trophees", []));
+/* les trophées de quiz demandent un sans-faute : on retire ceux gagnés avec une note plus basse */
+["fab", "reg", "photo", "pate", "etr"].forEach(m => { if ((store.get("best-" + m, 0) || 0) < 10) won.delete("q-" + m); });
+if ((store.get("best-ctrl", 0) || 0) < 20) won.delete("c20");
+[...won].forEach(id => { if (!TROPHIES.some(t => t[0] === id)) won.delete(id); });
+store.set("trophees", [...won]);
 const seen = { steps: new Set(store.get("vu-etapes", [])), regions: new Set(store.get("vu-regions", [])), fiches: new Set(store.get("vu-fiches", [])), etr: new Set(store.get("vu-etrangers", [])) };
 function saveSeen() { store.set("vu-etapes", [...seen.steps]); store.set("vu-regions", [...seen.regions]); store.set("vu-fiches", [...seen.fiches]); store.set("vu-etrangers", [...seen.etr]); }
 function win(id) {
@@ -409,7 +412,7 @@ function qFab() {
   out.push(Q("Que veut dire AOP ?", "Appellation d’origine protégée", ["Association des origines paysannes", "Agriculture d’origine préservée", "Appellation officielle de production"], { expl: "AOP = Appellation d’origine protégée, un signe officiel européen." }));
   out.push(Q("Quel animal ne fournit pas de lait pour les fromages AOP français ?", "La bufflonne", ["La vache", "La chèvre", "La brebis"], { expl: "Les fromages AOP français sont faits au lait de vache, de chèvre ou de brebis." }));
   out.push(Q("Combien y a-t-il de fromages AOP en France ?", "47", ["32", "52", "75"], { expl: "47 depuis l’arrivée du Mothais sur feuille en juin 2026." }));
-  out.push(Q("Combien de kilos de fromage un Français mange-t-il en moyenne par an ?", "Environ 27 kg", ["Environ 7 kg", "Environ 15 kg", "Environ 45 kg"], { expl: "Environ 27 kg par an et par habitant." }));
+  out.push(Q("Combien de kilos de fromage un Français mange-t-il en moyenne par an ?", "Environ 26 kg", ["Environ 7 kg", "Environ 15 kg", "Environ 45 kg"], { expl: "Environ 26 kg par an et par habitant." }));
   out.push(Q("Quel rang occupe la France pour la consommation de fromage par habitant ?", "1ᵉʳ rang mondial", ["2ᵉ rang mondial", "5ᵉ rang mondial", "10ᵉ rang mondial"], { expl: "La France est le premier pays consommateur de fromage au monde." }));
   out.push(Q("Quelle région produit le plus de fromages au lait de vache ?", "Normandie", ["Auvergne-Rhône-Alpes", "Bourgogne-Franche-Comté", "Bretagne"], { expl: "La Normandie est la 1ʳᵉ région productrice de fromages au lait de vache." }));
   out.push(Q("Comment s’appelle le liquide qui se sépare du caillé ?", "Le sérum", ["La saumure", "La présure", "Le ferment"], { expl: "Le caillé baigne dans un liquide résiduel : le sérum." }));
@@ -515,8 +518,8 @@ function finish() {
   const g = game; g.done = true;
   const max = g.mode === "ctrl" ? 20 : 10, sc = Math.round(g.score * 2) / 2;
   const best = store.get("best-" + g.mode, null); if (best === null || sc > best) store.set("best-" + g.mode, sc);
-  if (g.mode === "ctrl") { if (sc >= 10) win("c10"); if (sc >= 16) win("c16"); if (sc >= 20) win("c20"); }
-  else if (sc >= 8) win("q-" + g.mode);
+  if (g.mode === "ctrl") { if (sc >= 20) win("c20"); }
+  else if (sc >= 10) win("q-" + g.mode);
   const r = sc / max;
   const msg = r === 1 ? "Parfait, sans aucune faute !" : r >= .8 ? "Excellent travail !" : r >= .5 ? "C’est bien, encore un effort." : "Relisez le cours et retentez votre chance.";
   let parts = "";
