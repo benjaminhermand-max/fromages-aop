@@ -7,6 +7,7 @@ const NB = " ";
 const typo = s => String(s).replace(/ ([:;!?»])/g, NB + "$1").replace(/« /g, "«" + NB);
 const esc = s => typo(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const slug = s => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const fold = t => String(t).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const pick = (a, n) => shuffle(a).slice(0, n);
 const store = {
@@ -105,18 +106,22 @@ const norm = h => (h && h !== "#") ? h : "#accueil";
 const stack = [norm(location.hash)];
 function go(name) { if (location.hash !== "#" + name) location.hash = name; else route(); }
 function backTo(name) { if (stack.length > 1 && stack[stack.length - 2] === "#" + name) history.back(); else go(name); }
+let glossFrom = null;
+const scrollMemo = {};
 window.addEventListener("hashchange", () => {
-  const h = norm(location.hash);
-  if (stack.length > 1 && stack[stack.length - 2] === h) stack.pop(); else if (stack[stack.length - 1] !== h) stack.push(h);
-  route();
+  const h = norm(location.hash); let back = false;
+  if (stack.length > 1 && stack[stack.length - 2] === h) { stack.pop(); back = true; } else if (stack[stack.length - 1] !== h) stack.push(h);
+  route(back);
 });
 document.addEventListener("click", e => {
-  const g = e.target.closest("[data-go]"); if (g) { go(g.dataset.go); return; }
+  const g = e.target.closest("[data-go]"); if (g) { if (g.closest(".tabbar")) glossFrom = null; go(g.dataset.go); return; }
   const q = e.target.closest("[data-quiz]"); if (q) { startQuiz(q.dataset.quiz); return; }
+  const gl = e.target.closest("[data-gloss]"); if (gl) { openGloss(gl.dataset.gloss); return; }
 });
 
 let lastView = null, curRegion = null;
-function route() {
+function route(back) {
+  if (lastView && $("sheet").hidden) scrollMemo[lastView] = window.scrollY;
   const h = location.hash.slice(1);
   let v = "home", fiche = null, parent = null, title = "";
   if (["fabrication", "regions", "etrangers", "glossaire", "quiz", "trophees", "credits"].includes(h)) v = h;
@@ -134,26 +139,28 @@ function route() {
   views.forEach(x => x.hidden = x.id !== viewId);
   const cur = $(viewId), home = v === "home";
   $("bar").hidden = home;
-  $("bar").classList.toggle("top", !cur.dataset.parent);
+  const dynParent = v === "glossaire" && glossFrom && glossFrom !== "glossaire" ? glossFrom : null;
+  $("bar").classList.toggle("top", !cur.dataset.parent && !dynParent);
   const tab = { home: "home", region: "regions", jeu: "quiz", trophees: "home", credits: "home" }[v] || v;
   document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.dataset.tab === tab ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
   title = v === "region" ? curRegion.nom : v === "jeu" ? "Quiz · " + MODES.find(x => x[0] === game.mode)[1] : cur.dataset.title;
   $("barT").textContent = title;
-  parent = cur.dataset.parent || "accueil";
-  const labels = { regions: "Régions", quiz: "Quiz", accueil: "Accueil" };
-  $("backLbl").textContent = labels[parent];
+  parent = dynParent || cur.dataset.parent || "accueil";
+  const labels = { regions: "Régions", quiz: "Quiz", accueil: "Accueil", fabrication: "Fabrication", etrangers: "Étrangers", glossaire: "Glossaire", trophees: "Trophées", credits: "Crédits" };
+  const pr = R.find(r => r.slug === parent);
+  $("backLbl").textContent = labels[parent] || (pr ? pr.nom : "Retour");
   $("back").onclick = () => { if (v === "jeu" && game && !game.done && !confirmLeave()) return; backTo(parent); };
   if (fiche) openFiche(fiche); else closeFiche();
   const key = viewId + (v === "region" ? curRegion.id : "");
-  if (key !== lastView && !fiche) window.scrollTo(0, 0);
+  if (key !== lastView && !fiche) { const y = back && scrollMemo[key] ? scrollMemo[key] : 0; window.scrollTo(0, y); requestAnimationFrame(() => window.scrollTo(0, y)); }
   lastView = key;
   document.title = home ? "Fromages AOP" : title + " · Fromages AOP";
 }
 function confirmLeave() { return true; }
 
 /* ================= FABRICATION ================= */
-$("laits").innerHTML = LAITS.map(([n, c, col]) => `<span class="chip"><i style="background:${col}"></i>${n} · ${c} AOP</span>`).join("");
-$("pates").innerHTML = Object.entries(PATE).map(([k, p]) => `<div class="card pate"><div class="ab" style="background:color-mix(in srgb, ${p.c} 30%, var(--surface));border-color:${p.c}">${p.ab}</div><div class="nm">${p.nom}</div><div class="ct">${U.filter(f => f.pate_code === k).length} AOP</div><div class="ex">${esc(p.ex)}${p.cr ? "<br>" + p.cr : ""}${p.tip ? '<br><span class="tip">Pour retenir · <b>A B C</b></span>' : ""}</div></div>`).join("");
+$("laits").innerHTML = LAITS.map(([n, c, col]) => `<button class="chip" type="button" data-gloss="lait=${fold(n)}"><i style="background:${col}"></i>${n} · ${c} AOP <b aria-hidden="true">›</b></button>`).join("");
+$("pates").innerHTML = Object.entries(PATE).map(([k, p]) => `<button class="card pate" type="button" data-gloss="pate=${k}"><div class="ab" style="background:color-mix(in srgb, ${p.c} 30%, var(--surface));border-color:${p.c}">${p.ab}</div><div class="nm">${p.nom}</div><div class="ct">${U.filter(f => f.pate_code === k).length} AOP</div><div class="ex">${esc(p.ex)}${p.cr ? "<br>" + p.cr : ""}${p.tip ? '<br><span class="tip">Pour retenir · <b>A B C</b></span>' : ""}<em>Voir les fromages ›</em></div></button>`).join("");
 let si = 0; const track = $("track"), view = $("stepView"), LAST = STEPS.length - 1;
 track.innerHTML = STEPS.map((st, i) => `<div class="slide" aria-roledescription="étape" aria-label="Étape ${i + 1} sur 5"><div class="step-img"><img src="${fabSrc(st[1], 640)}" srcset="${fabSrc(st[1], 640)} 640w, ${fabSrc(st[1], 1200)} 1200w" sizes="(min-width:900px) 844px, 100vw" alt="${esc(st[3])}" draggable="false" width="1200" height="896" ${i ? 'loading="lazy"' : ""}></div><div class="step-txt"><div class="n">Étape ${i + 1} sur 5</div><h4>${st[0]}</h4><p>${esc(st[2])}</p></div></div>`).join("");
 const slides = [...track.children];
@@ -223,7 +230,6 @@ $("etrList").innerHTML = COUNTRIES.map(c => {
 $("etrList").addEventListener("click", e => { const b = e.target.closest("[data-etr]"); b && go("etranger-" + b.dataset.etr); });
 
 /* ================= GLOSSAIRE ================= */
-const fold = t => String(t).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 const GALL = U.map(f => Object.assign(f, { kind: "aop" })).concat(E);   // 47 AOP + 8 étrangers
 GALL.forEach(g => { g.hay = fold([g.nom, g.kind === "aop" ? g.regions.join(" ") : g.pays + " " + g.origine, g.lait, g.kind === "aop" ? PATE[g.pate_code].nom + " " + PATE[g.pate_code].ab : g.pate, g.kind === "etr" ? "etranger" : "aop france"].join(" ")); });
 const GF = { q: "", ori: "all", lait: "all", pate: "all", reg: "all", sort: "az" };
@@ -282,6 +288,13 @@ function drawGloss() {
   $("gList").innerHTML = html + "</ul>";
 }
 function renderGloss() { drawGlossFilters(); drawGloss(); }
+/* depuis la Fabrication : « lait=vache », « pate=ppc », « reg=nor »… Le retour ramène à la page de départ. */
+function openGloss(spec) {
+  Object.assign(GF, { q: "", ori: "all", lait: "all", pate: "all", reg: "all" });
+  spec.split("&").forEach(kv => { const [k, v] = kv.split("="); GF[k] = v; });
+  glossFrom = norm(location.hash).slice(1);
+  go("glossaire");
+}
 $("gList").addEventListener("click", e => { const b = e.target.closest("[data-gl]"); b && go("gl-" + b.dataset.gl); });
 /* les AOP uniques prennent la clé de leur première région */
 U.forEach(u => { u.key = byName[u.nom][0].key; });

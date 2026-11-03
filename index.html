@@ -108,6 +108,14 @@ h1{margin:6px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600
 .fig{padding:12px 14px}
 .fig b{display:block;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:1.7rem;line-height:1.1;color:var(--accent)}
 .fig span{display:block;font-size:.9rem;color:var(--muted);line-height:1.3;margin-top:2px}
+.fig.link{font:inherit;color:inherit;text-align:left;cursor:pointer;transition:border-color .15s, transform .15s}
+.fig.link:hover{border-color:var(--accent);transform:translateY(-2px)}
+.fig em,.pate em{display:block;font-style:normal;font-size:.84rem;font-weight:700;color:var(--accent);margin-top:6px}
+button.chip{cursor:pointer;font:inherit;font-weight:600;font-size:.92rem;color:var(--ink);transition:border-color .15s}
+button.chip:hover{border-color:var(--accent)}
+button.chip b{color:var(--accent);font-weight:700}
+button.pate{font:inherit;color:inherit;text-align:left;cursor:pointer;width:100%;transition:border-color .15s, transform .15s}
+button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
 .src{font-size:.8rem;color:var(--muted);margin:8px 0 0}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .chip{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 12px;font-size:.92rem;font-weight:600}
@@ -464,17 +472,17 @@ h1{margin:6px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600
     <p class="kicker">Le fromage en France</p>
     <h3>Quelques chiffres</h3>
     <div class="figs">
-      <div class="card fig"><b>47</b><span>fromages AOP en France</span></div>
+      <button class="card fig link" type="button" data-gloss="ori=aop"><b>47</b><span>fromages AOP en France</span><em>Voir la liste ›</em></button>
       <div class="card fig"><b>27 kg</b><span>de fromage par Français et par an</span></div>
       <div class="card fig"><b>1ᵉʳ</b><span>pays consommateur de fromage au monde</span></div>
-      <div class="card fig"><b>Normandie</b><span>1ʳᵉ région productrice de fromages au lait de vache</span></div>
+      <button class="card fig link" type="button" data-gloss="reg=nor"><b>Normandie</b><span>1ʳᵉ région productrice de fromages au lait de vache</span><em>Voir ses fromages ›</em></button>
     </div>
     <p class="src">Nombre d’AOP et consommation d’après le CNIEL (février 2026), production normande d’après Agreste Normandie (mai 2025).</p>
   </div>
   <div class="sec">
     <p class="kicker">La matière première</p>
     <h3>Les 3 laits</h3>
-    <p class="hint">En France, les fromages AOP sont faits avec le lait de trois animaux.</p>
+    <p class="hint">En France, les fromages AOP sont faits avec le lait de trois animaux. Touchez un lait pour voir ses fromages.</p>
     <figure class="plate" style="margin-inline:0"><img src="img/fab/fab-laits-640.webp" srcset="img/fab/fab-laits-640.webp 640w, img/fab/fab-laits-1200.webp 1200w" sizes="(min-width:900px) 868px, 100vw" alt="Une vache, une chèvre et une brebis dans un pré, devant trois bidons de lait" width="1200" height="896"></figure>
     <div class="chips" id="laits"></div>
     <p class="note">Le Brocciu (Corse) se fabrique au lait de brebis et/ou de chèvre.</p>
@@ -496,7 +504,7 @@ h1{margin:6px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600
   <div class="sec">
     <p class="kicker">Les familles</p>
     <h3>Les 6 familles de pâtes</h3>
-    <p class="hint">Chaque fromage AOP appartient à l’une de ces six familles.</p>
+    <p class="hint">Chaque fromage AOP appartient à l’une de ces six familles. Touchez une famille pour voir ses fromages.</p>
     <div class="pates" id="pates"></div>
   </div>
   <div class="sec">
