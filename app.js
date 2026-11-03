@@ -335,19 +335,35 @@ function fill() {
   $("fPrev").disabled = fi === 0; $("fNext").disabled = fi === list.length - 1;
 }
 function ficheHash(f) { return fctx === "gl" ? "#gl-" + f.key : fctx === "region" ? "#fiche-" + f.key : "#etranger-" + f.slug; }
-function step(dir, from = 0) {
+/* passage d'un fromage à l'autre : l'image part du point où le doigt l'a lâchée,
+   la photo suivante est chargée avant d'entrer, sans aucun saut */
+const EASE = "cubic-bezier(.22,.8,.3,1)";
+function preload(src) { if (!src) return Promise.resolve(); const im = new Image(); im.src = src; return (im.decode ? im.decode() : new Promise(r => { im.onload = im.onerror = r; })).catch(() => {}); }
+async function step(dir, from = 0) {
   const img = $("fImg"), fb = document.querySelector(".fb"), w = $("ph").clientWidth, n = fi + dir;
   if (busy) return;
+  if (dir === 0 || n < 0 || n >= list.length) {
+    if (from) { const a = img.animate([{ transform: `translateX(${from}px)` }, { transform: "translateX(0)" }], { duration: 320, easing: EASE }); img.style.transform = ""; await a.finished.catch(() => {}); }
+    return;
+  }
+  busy = true;
+  const next = list[n];
+  const ready = preload(next.photo);
+  let out = null;
+  if (!img.hidden) { out = img.animate([{ transform: `translateX(${from}px)`, opacity: 1 }, { transform: `translateX(${-dir * w}px)`, opacity: 0 }], { duration: 220, easing: "ease-in", fill: "forwards" }); }
   img.style.transform = "";
-  if (dir === 0 || n < 0 || n >= list.length) { if (from) img.animate([{ transform: `translateX(${from}px)` }, { transform: "translateX(0)" }], { duration: 320, easing: "cubic-bezier(.22,.8,.3,1)" }); return; }
-  busy = true; fb.style.opacity = 0;
-  const out = img.hidden ? Promise.resolve() : img.animate([{ transform: `translateX(${from}px)`, opacity: 1 }, { transform: `translateX(${-dir * w}px)`, opacity: .15 }], { duration: 200, easing: "ease-in" }).finished;
-  out.then(() => {
-    fi = n; const h = ficheHash(list[n]); history.replaceState(null, "", h); stack[stack.length - 1] = h; fill();
-    fb.style.opacity = 1;
-    if (img.hidden) { busy = false; return; }
-    img.animate([{ transform: `translateX(${dir * w * .6}px)`, opacity: .15 }, { transform: "translateX(0)", opacity: 1 }], { duration: 340, easing: "cubic-bezier(.22,.8,.3,1)" }).finished.then(() => busy = false, () => busy = false);
-  }, () => busy = false);
+  fb.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160, fill: "forwards" });
+  await Promise.all([out ? out.finished.catch(() => {}) : null, ready]);
+  fi = n; const h = ficheHash(next); history.replaceState(null, "", h); stack[stack.length - 1] = h; fill();
+  if (!img.hidden && img.decode) await img.decode().catch(() => {});
+  const fbIn = fb.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220 });
+  fb.getAnimations().forEach(a => { if (a !== fbIn) a.cancel(); });
+  if (!img.hidden) {
+    const inn = img.animate([{ transform: `translateX(${dir * w * .5}px)`, opacity: 0 }, { transform: "translateX(0)", opacity: 1 }], { duration: 340, easing: EASE });
+    if (out) out.cancel();
+    await inn.finished.catch(() => {});
+  } else if (out) out.cancel();
+  busy = false;
 }
 function closeFiche() { if ($("sheet").hidden) return; $("sheet").hidden = true; document.body.style.overflow = ""; }
 const closeTarget = () => fctx === "gl" ? "glossaire" : fctx === "region" ? curRegion.slug : "etrangers";
