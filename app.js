@@ -94,10 +94,11 @@ function dragger(el, { onMove, onEnd }) {
     if (!d || e.pointerId !== d.id) return;
     const dx = e.clientX - d.x, dy = e.clientY - d.y;
     if (!d.lock && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) { d.lock = Math.abs(dx) > Math.abs(dy) ? "x" : "y"; if (d.lock === "x") { try { el.setPointerCapture(d.id); } catch (_) {} } }
-    if (d.lock === "x") { d.dx = dx; onMove(dx); }
+    if (d.lock === "x") { d.dx = dx - Math.sign(dx) * 6; onMove(d.dx); }   /* pas de saut au démarrage */
   });
-  const end = e => { if (!d || e.pointerId !== d.id) return; const dd = d; d = null; if (dd.lock === "x") onEnd(dd.dx, dd.dx / Math.max(1, performance.now() - dd.t)); };
-  el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end);
+  const end = (e, cancelled) => { if (!d || e.pointerId !== d.id) return; const dd = d; d = null;
+    if (dd.lock === "x") cancelled ? onEnd(0, 0) : onEnd(dd.dx, dd.dx / Math.max(1, performance.now() - dd.t)); };
+  el.addEventListener("pointerup", e => end(e, false)); el.addEventListener("pointercancel", e => end(e, true));
 }
 
 /* ================= NAVIGATION (le bouton retour du téléphone fonctionne) ================= */
@@ -331,6 +332,7 @@ function fill() {
     seen.etr.add(f.nom);
   }
   saveSeen(); checkSeen();
+  document.querySelector(".fb").scrollTop = 0;
   $("fCount").textContent = (fi + 1) + " / " + list.length;
   $("fPrev").disabled = fi === 0; $("fNext").disabled = fi === list.length - 1;
 }

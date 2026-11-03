@@ -216,9 +216,10 @@ button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
 /* ======== FICHE ======== */
 .sheet{position:fixed;inset:0;z-index:40;display:flex;align-items:flex-end;justify-content:center;background:rgba(43,36,32,.45)}
 @media (min-width:720px){.sheet{align-items:center;padding:24px}}
-.sheet-in{position:relative;width:100%;max-width:720px;max-height:100%;overflow:auto;overscroll-behavior:contain;background:var(--surface);border-radius:20px 20px 0 0;padding-bottom:calc(20px + env(safe-area-inset-bottom, 0px));box-shadow:0 -10px 40px -10px rgba(43,36,32,.4)}
-@media (min-width:720px){.sheet-in{border-radius:20px}}
-.ph{position:relative;background:var(--paper);aspect-ratio:4/3;touch-action:pan-y;user-select:none;-webkit-user-select:none;overflow:hidden}
+/* hauteur fixe : la photo ne bouge jamais d'un fromage à l'autre, seul le texte défile */
+.sheet-in{position:relative;width:100%;max-width:720px;height:90vh;height:90dvh;max-height:900px;display:flex;flex-direction:column;overflow:hidden;background:var(--surface);border-radius:20px 20px 0 0;box-shadow:0 -10px 40px -10px rgba(43,36,32,.4)}
+@media (min-width:720px){.sheet-in{border-radius:20px;height:calc(100vh - 48px);height:calc(100dvh - 48px);max-height:860px}}
+.ph{position:relative;flex:0 0 auto;background:var(--paper);aspect-ratio:4/3;max-height:52vh;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden}
 .ph img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;will-change:transform}
 .ph .noimg{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-style:italic;color:var(--muted)}
 .ph .arrow{position:absolute;top:50%;transform:translateY(-50%)}
@@ -226,7 +227,7 @@ button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
 .ph .next{right:calc(10px + env(safe-area-inset-right, 0px))}
 .ph .count{position:absolute;right:12px;bottom:10px;background:rgba(43,36,32,.7);color:var(--surface);font-size:.82rem;font-weight:600;padding:2px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
 .close{position:absolute;top:10px;right:calc(10px + env(safe-area-inset-right, 0px));z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,252,246,.92);cursor:pointer;font-size:1.4rem;line-height:1;display:grid;place-items:center;box-shadow:0 2px 10px -4px rgba(43,36,32,.5)}
-.fb{padding:16px 20px 0}
+.fb{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:16px 20px calc(24px + env(safe-area-inset-bottom, 0px))}
 .fb .eb{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0}
 .fb h2{margin:2px 0 0;font-family:var(--f-display);font-style:italic;font-weight:600;font-size:clamp(1.9rem,7vw,2.5rem);line-height:1.05}
 .facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0 0}
@@ -627,9 +628,9 @@ button.pate:hover{border-color:var(--accent);transform:translateY(-2px)}
 <button class="totop" id="totop" type="button" aria-label="Remonter en haut" data-off><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-<script src="data/aop.js?v=6"></script>
-<script src="data/etrangers.js?v=6"></script>
-<script src="app.js?v=6"></script>
+<script src="data/aop.js?v=7"></script>
+<script src="data/etrangers.js?v=7"></script>
+<script src="app.js?v=7"></script>
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js", { updateViaCache: "none" }); }); }
 </script>
