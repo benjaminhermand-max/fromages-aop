@@ -42,6 +42,8 @@ const E = window.ETRANGERS; E.forEach(e => { e.slug = slug(e.nom); e.kind = "etr
   e.pate_code = (Object.entries(PATE).find(([k, p]) => p.nom === e.pate) || ["autre"])[0]; });
 const COUNTRIES = [...new Set(E.map(e => e.pays))];
 const LAITS = [["Vache", U.filter(f => f.lait === "Vache").length, "#C9A27A"], ["Chèvre", U.filter(f => f.lait === "Chèvre").length, "#E8DCC0"], ["Brebis", U.filter(f => f.lait === "Brebis").length, "#F4EFE6"]];
+/* « le caillage », « l’égouttage », « l’affinage » */
+const etape = n => (/^[AEÉÈIOU]/i.test(n) ? "l’" : "le ") + n.toLowerCase();
 const fabSrc = (k, w) => `img/fab/fab-${k}-${w}.webp`;
 /* le, la ou l’ devant le nom d’un fromage */
 const FEM = ["Fourme d’Ambert", "Fourme de Montbrison", "Tome des Bauges", "Rigotte de Condrieu", "Brousse du Rove", "Mozzarella", "Feta"];
@@ -432,9 +434,9 @@ const TRIO_PPC = "Abondance, Beaufort, Comté";
 
 function qFab() {
   const out = [];
-  STEPS.forEach(s => out.push(Q("Quelle étape de l’élaboration correspond à cette définition ?", s[0], STEPS.map(x => x[0]), { ctx: s[2], expl: `C’est le ${s[0].toLowerCase()}.` })));
+  STEPS.forEach(s => out.push(Q("Quelle étape de l’élaboration correspond à cette définition ?", s[0], STEPS.map(x => x[0]), { ctx: s[2], expl: `C’est ${etape(s[0])}.` })));
   out.push(Q("Quelle est la première étape de l’élaboration d’un fromage ?", "Le caillage", ["L’égouttage", "Le moulage", "Le salage", "L’affinage"], { expl: "Tout commence par le caillage : le lait coagule et donne le caillé." }));
-  for (let i = 0; i < 4; i++) out.push(Q(`Quelle étape vient juste après le ${STEPS[i][0].toLowerCase()} ?`, STEPS[i + 1][0], STEPS.map(x => x[0]).filter(x => x !== STEPS[i][0]), { expl: "Dans l’ordre : caillage, égouttage, moulage, salage, affinage." }));
+  for (let i = 0; i < 4; i++) out.push(Q(`Quelle étape vient juste après ${etape(STEPS[i][0])} ?`, STEPS[i + 1][0], STEPS.map(x => x[0]).filter(x => x !== STEPS[i][0]), { expl: "Dans l’ordre : caillage, égouttage, moulage, salage, affinage." }));
   out.push(Q("Que veut dire AOP ?", "Appellation d’origine protégée", ["Association des origines paysannes", "Agriculture d’origine préservée", "Appellation officielle de production"], { expl: "AOP = Appellation d’origine protégée, un signe officiel européen." }));
   out.push(Q("Quel animal ne fournit pas de lait pour les fromages AOP français ?", "La bufflonne", ["La vache", "La chèvre", "La brebis"], { expl: "Les fromages AOP français sont faits au lait de vache, de chèvre ou de brebis." }));
   out.push(Q("Combien y a-t-il de fromages AOP en France ?", "47", ["32", "52", "75"], { expl: "47 depuis l’arrivée du Mothais sur feuille en juin 2026." }));
@@ -498,7 +500,7 @@ const CTRL_REG = ["Cantal", "Comté", "Époisses", "Munster", "Maroilles", "Liva
 function qCtrl() {
   const out = [];
   const P = (part, pts, q) => Object.assign(q, { part, pts });
-  shuffle(STEPS).forEach(s => out.push(P("1ʳᵉ partie · Élaboration", .5, Q("Quelle étape correspond à cette définition ?", s[0], STEPS.map(x => x[0]), { ctx: s[2], expl: `C’est le ${s[0].toLowerCase()}.` }))));
+  shuffle(STEPS).forEach(s => out.push(P("1ʳᵉ partie · Élaboration", .5, Q("Quelle étape correspond à cette définition ?", s[0], STEPS.map(x => x[0]), { ctx: s[2], expl: `C’est ${etape(s[0])}.` }))));
   out.push(P("1ʳᵉ partie · Élaboration", .5, Q("Quels animaux produisent le lait des fromages AOP en France ?", "Vache, chèvre, brebis", ["Vache, bufflonne, chèvre", "Vache, brebis, jument", "Chèvre, brebis, bufflonne"], { expl: "Vache, chèvre et brebis." })));
   const names = Object.values(PATE).map(p => p.nom);
   shuffle(Object.values(PATE)).forEach(p => out.push(P("1ʳᵉ partie · Élaboration", .5, Q(`Donnez le nom complet de « ${p.ab} ».`, p.nom, names, { expl: `${p.ab} = ${p.nom}.` }))));
