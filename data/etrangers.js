@@ -5,16 +5,16 @@ window.ETRANGERS = [
     photo: "img/e/cheddar.jpg", mini: "img/e/mini/cheddar.webp", credit_photo: {"auteur": "J.P.Lon", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Somerset-Cheddar.jpg"} },
   { nom: "Emmental", pays: "Suisse", origine: "Vallée de l’Emme, canton de Berne", lait: "Vache", pate: "Pâte pressée cuite",
     description: "Très grosse meule qui peut dépasser 100 kg. Sa pâte est percée de grands trous, appelés « yeux », formés par le gaz des ferments pendant l’affinage.",
-    photo: "img/e/emmental.jpg", mini: "img/e/mini/emmental.webp", credit_photo: {"auteur": "Zerohund", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Emmentaler.jpg"} },
+    photo: "img/e/emmental.jpg", mini: "img/e/mini/emmental.webp", credit_photo: {"auteur": "Dominik Hundhammer (Zerohund)", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Emmentaler.jpg"} },
   { nom: "Parmesan", pays: "Italie", origine: "Émilie-Romagne (Parmigiano Reggiano)", lait: "Vache", pate: "Pâte pressée cuite",
     description: "Pâte très dure et granuleuse, affinée au moins 12 mois. Grosse meule d’environ 40 kg, marquée de son nom sur le talon. On le râpe sur les pâtes et le risotto.",
-    photo: null, mini: null, credit_photo: null },
+    photo: "img/e/parmesan.jpg", mini: "img/e/mini/parmesan.webp", credit_photo: {"auteur": "Dominik Hundhammer (Zerohund)", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Parmigiano_reggiano_piece.jpg"} },
   { nom: "Gruyère", pays: "Suisse", origine: "Canton de Fribourg", lait: "Vache", pate: "Pâte pressée cuite",
     description: "Pâte ferme et fondante au goût fruité, avec peu ou pas de trous, ce qui le distingue de l’Emmental. Fromage de base de la fondue moitié-moitié.",
     photo: "img/e/gruyere.jpg", mini: "img/e/mini/gruyere.webp", credit_photo: {"auteur": "Hubertl", "licence": "CC BY-SA 4.0", "source": "https://commons.wikimedia.org/wiki/File:2015-01-25_Le_Gruy%C3%A8re_AOP_Bio_-_Der_Schweizer_-_WikiLovesCheese_Vienna_-_hu_-_7876.jpg"} },
   { nom: "Manchego", pays: "Espagne", origine: "La Manche (Castille-La Manche)", lait: "Brebis", pate: "Pâte pressée non cuite",
     description: "Fait avec le lait des brebis de race manchega. Sa croûte porte un motif en zigzag, souvenir des anciens moules tressés en sparte.",
-    photo: "img/e/manchego.jpg", mini: "img/e/mini/manchego.webp", credit_photo: {"auteur": "Zerohund", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Manchego.jpg"} },
+    photo: "img/e/manchego.jpg", mini: "img/e/mini/manchego.webp", credit_photo: {"auteur": "Dominik Hundhammer (Zerohund)", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Manchego.jpg"} },
   { nom: "Edam", pays: "Pays-Bas", origine: "Ville d’Edam, au nord d’Amsterdam", lait: "Vache", pate: "Pâte pressée non cuite",
     description: "Petite boule à pâte souple et au goût doux, souvent recouverte d’une couche de cire rouge pour l’exportation.",
     photo: "img/e/edam.jpg", mini: "img/e/mini/edam.webp", credit_photo: {"auteur": "Jon Sullivan", "licence": "Domaine public", "source": "https://commons.wikimedia.org/wiki/File:Edam.jpg"} },
@@ -23,5 +23,5 @@ window.ETRANGERS = [
     photo: "img/e/mozzarella.jpg", mini: "img/e/mini/mozzarella.webp", credit_photo: {"auteur": "Popo le Chien", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Mozzarella_di_bufala3.jpg"} },
   { nom: "Feta", pays: "Grèce", origine: "Grèce continentale et îles", lait: "Brebis, parfois avec un peu de chèvre", pate: "Pâte fraîche en saumure",
     description: "Fromage blanc et friable, conservé dans de la saumure. Seule la Grèce a le droit de l’appeler feta.",
-    photo: null, mini: null, credit_photo: null }
+    photo: "img/e/feta.jpg", mini: "img/e/mini/feta.webp", credit_photo: {"auteur": "Dominik Hundhammer (Zerohund)", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Feta_Greece_2.jpg"} }
 ];
