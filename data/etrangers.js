@@ -17,7 +17,7 @@ window.ETRANGERS = [
     photo: "img/e/manchego.jpg", mini: "img/e/mini/manchego.webp", credit_photo: {"auteur": "Dominik Hundhammer (Zerohund)", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Manchego.jpg"} },
   { nom: "Edam", pays: "Pays-Bas", origine: "Ville d’Edam, au nord d’Amsterdam", lait: "Vache", pate: "Pâte pressée non cuite",
     description: "Petite boule à pâte souple et au goût doux, souvent recouverte d’une couche de cire rouge pour l’exportation.",
-    photo: "img/e/edam.jpg", mini: "img/e/mini/edam.webp", credit_photo: {"auteur": "Jon Sullivan", "licence": "Domaine public", "source": "https://commons.wikimedia.org/wiki/File:Edam.jpg"} },
+    photo: "img/e/edam.jpg", mini: "img/e/mini/edam.webp", credit_photo: {"auteur": "Yvwv", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:SmallEdamCheese.jpg"} },
   { nom: "Mozzarella", pays: "Italie", origine: "Campanie (mozzarella di bufala)", lait: "Bufflonne ou vache", pate: "Pâte filée",
     description: "Le caillé est étiré dans de l’eau chaude puis façonné en boules, conservées dans leur petit-lait. La plus réputée est faite au lait de bufflonne.",
     photo: "img/e/mozzarella.jpg", mini: "img/e/mini/mozzarella.webp", credit_photo: {"auteur": "Popo le Chien", "licence": "CC BY-SA 3.0", "source": "https://commons.wikimedia.org/wiki/File:Mozzarella_di_bufala3.jpg"} },
